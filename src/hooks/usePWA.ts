@@ -15,25 +15,27 @@ export function usePWA() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstallable, setIsInstallable] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
+  const [isIOS, setIsIOS] = useState(false)
+  const [isStandalone, setIsStandalone] = useState(false)
 
   useEffect(() => {
-    // Check if app is already installed
-    const checkInstalled = () => {
-      if (window.matchMedia("(display-mode: standalone)").matches) {
-        setIsInstalled(true)
-      }
-    }
+    // Détecter iOS
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    setIsIOS(iOS)
 
-    checkInstalled()
+    // Détecter si l'app est déjà installée (mode standalone)
+    const standalone = window.matchMedia("(display-mode: standalone)").matches
+    setIsStandalone(standalone)
+    setIsInstalled(standalone)
 
-    // Listen for beforeinstallprompt event
+    // Écouter l'événement beforeinstallprompt (Android/Chrome)
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
       setIsInstallable(true)
     }
 
-    // Listen for appinstalled event
+    // Écouter l'installation
     const handleAppInstalled = () => {
       setIsInstalled(true)
       setIsInstallable(false)
@@ -57,13 +59,14 @@ export function usePWA() {
       const { outcome } = await deferredPrompt.userChoice
 
       if (outcome === "accepted") {
-        setDeferredPrompt(null)
+        setIsInstalled(true)
         setIsInstallable(false)
+        setDeferredPrompt(null)
         return true
       }
       return false
     } catch (error) {
-      console.error("Erreur installation PWA:", error)
+      console.error("Erreur lors de l'installation:", error)
       return false
     }
   }
@@ -71,6 +74,8 @@ export function usePWA() {
   return {
     isInstallable,
     isInstalled,
+    isIOS,
+    isStandalone,
     installApp,
   }
 }

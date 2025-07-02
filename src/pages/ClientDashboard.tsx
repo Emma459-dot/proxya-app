@@ -286,7 +286,7 @@ const ClientDashboard = () => {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-indigo-600 text-white dark:bg-white dark:text-slate-900">
+              <AvatarFallback className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white">
                 {client?.prenom?.[0] || "C"}
                 {client?.nom?.[0] || "L"}
               </AvatarFallback>
@@ -342,7 +342,7 @@ const ClientDashboard = () => {
               }}
               className={`flex items-center gap-2 ${
                 activeTab === tab.id
-                  ? "bg-indigo-600 text-white dark:bg-white dark:text-slate-900"
+                  ? "bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               } relative`}
             >
