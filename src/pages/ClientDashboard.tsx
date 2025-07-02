@@ -52,18 +52,6 @@ const ClientDashboard = () => {
 
   const client = currentUser as Client
 
-  // Appliquer la couleur de fond au body pour éviter les couleurs parasites
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark")
-    document.body.style.backgroundColor = isDark ? "#0f172a" : "#ffffff"
-    document.documentElement.style.backgroundColor = isDark ? "#0f172a" : "#ffffff"
-
-    return () => {
-      document.body.style.backgroundColor = ""
-      document.documentElement.style.backgroundColor = ""
-    }
-  }, [])
-
   useEffect(() => {
     console.log("ClientDashboard - useEffect déclenché", { currentUser, userType })
     if (!currentUser || userType !== "client") {
@@ -71,6 +59,7 @@ const ClientDashboard = () => {
       navigate("/client/login")
       return
     }
+
     loadData()
   }, [])
 
@@ -85,6 +74,7 @@ const ClientDashboard = () => {
     if (client?.id && services.length > 0) {
       const clientFavorites = FavoritesService.getFavorites(client.id)
       setFavorites(clientFavorites)
+
       // Filtrer les services favoris
       const favServices = services.filter((service) => clientFavorites.includes(service.id!))
       setFavoriteServices(favServices)
@@ -96,7 +86,6 @@ const ClientDashboard = () => {
       console.log("Début du chargement des données client...")
       setIsLoading(true)
       setError("")
-
       if (!client?.id) {
         console.error("ID client manquant")
         setError("Erreur: ID client manquant")
@@ -135,6 +124,7 @@ const ClientDashboard = () => {
               }
             }
           }
+
           setServices(allServices)
           setFilteredServices(allServices)
           console.log("Services chargés:", allServices.length)
@@ -216,7 +206,7 @@ const ClientDashboard = () => {
   const getStatusColor = (status: Booking["status"]) => {
     switch (status) {
       case "pending":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400"
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
       case "confirmed":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
       case "completed":
@@ -256,9 +246,9 @@ const ClientDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full bg-white dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-white mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 dark:border-white mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Chargement de votre espace client...</p>
         </div>
       </div>
@@ -267,7 +257,7 @@ const ClientDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen w-full bg-white dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-500 mb-4">
             <AlertCircle size={48} className="mx-auto" />
@@ -275,10 +265,7 @@ const ClientDashboard = () => {
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Erreur de chargement</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-4">{error}</p>
           <div className="flex gap-2 justify-center">
-            <Button
-              onClick={() => window.location.reload()}
-              className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
-            >
+            <Button onClick={() => window.location.reload()} className="bg-indigo-600 hover:bg-indigo-700 text-white">
               Rafraîchir
             </Button>
             <Button onClick={handleLogout} variant="outline">
@@ -291,15 +278,15 @@ const ClientDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-white dark:bg-slate-900" style={{ backgroundColor: "inherit" }}>
+    <div className="min-h-screen bg-stone-50 dark:bg-slate-900">
       <ThemeToggle />
 
       {/* Header */}
-      <div className="w-full border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700 relative z-10">
+      <div className="border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+              <AvatarFallback className="bg-indigo-600 text-white dark:bg-white dark:text-slate-900">
                 {client?.prenom?.[0] || "C"}
                 {client?.nom?.[0] || "L"}
               </AvatarFallback>
@@ -317,7 +304,7 @@ const ClientDashboard = () => {
               variant="ghost"
               size="icon"
               onClick={() => navigate("/ai-chat")}
-              className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
               title="Assistant IA"
             >
               <Bot size={20} />
@@ -334,47 +321,44 @@ const ClientDashboard = () => {
         </div>
 
         {/* Navigation */}
-        <div className="w-full bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700 relative z-10">
-          <div className="flex gap-1 px-4 pb-4 overflow-x-auto scrollbar-hide">
-            {[
-              { id: "discover", label: "Découvrir", icon: Search },
-              { id: "favorites", label: "Favoris", icon: Heart, badge: favorites.length },
-              { id: "bookings", label: "Mes réservations", icon: Calendar },
-              { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
-              { id: "profile", label: "Profil", icon: User },
-            ].map((tab) => (
-              <Button
-                key={tab.id}
-                variant={activeTab === tab.id ? "default" : "ghost"}
-                size="sm"
-                onClick={() => {
-                  if (tab.id === "messages") {
-                    navigate("/messages")
-                  } else {
-                    setActiveTab(tab.id)
-                  }
-                }}
-                className={`flex items-center gap-2 whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                } relative`}
-              >
-                <tab.icon size={16} />
-                {tab.label}
-                {tab.badge && tab.badge > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
-                    {tab.badge > 9 ? "9+" : tab.badge}
-                  </Badge>
-                )}
-              </Button>
-            ))}
-          </div>
+        <div className="flex gap-1 px-4 pb-4">
+          {[
+            { id: "discover", label: "Découvrir", icon: Search },
+            { id: "favorites", label: "Favoris", icon: Heart, badge: favorites.length },
+            { id: "bookings", label: "Mes réservations", icon: Calendar },
+            { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
+            { id: "profile", label: "Profil", icon: User },
+          ].map((tab) => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? "default" : "ghost"}
+              size="sm"
+              onClick={() => {
+                if (tab.id === "messages") {
+                  navigate("/messages")
+                } else {
+                  setActiveTab(tab.id)
+                }
+              }}
+              className={`flex items-center gap-2 ${
+                activeTab === tab.id
+                  ? "bg-indigo-600 text-white dark:bg-white dark:text-slate-900"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              } relative`}
+            >
+              <tab.icon size={16} />
+              {tab.label}
+              {tab.badge && tab.badge > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
+                  {tab.badge > 9 ? "9+" : tab.badge}
+                </Badge>
+              )}
+            </Button>
+          ))}
         </div>
       </div>
 
-      {/* Contenu principal */}
-      <div className="w-full p-4 max-w-6xl mx-auto bg-white dark:bg-slate-900">
+      <div className="p-4 max-w-6xl mx-auto">
         {activeTab === "discover" && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -388,7 +372,7 @@ const ClientDashboard = () => {
                   className="p-1"
                 >
                   {useAdvancedSearch ? (
-                    <ToggleRight size={24} className="text-slate-900 dark:text-white" />
+                    <ToggleRight size={24} className="text-indigo-600" />
                   ) : (
                     <ToggleLeft size={24} className="text-slate-400" />
                   )}
@@ -451,7 +435,7 @@ const ClientDashboard = () => {
                 Services disponibles
                 {(isSearching || isLoading) && (
                   <div className="inline-flex items-center ml-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900 dark:border-white"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
                   </div>
                 )}
               </h3>
@@ -559,7 +543,7 @@ const ClientDashboard = () => {
                                   {service.category}
                                 </Badge>
                                 {service.isUrgentAvailable && (
-                                  <Badge variant="outline" className="text-xs border-orange-400 text-orange-600">
+                                  <Badge variant="outline" className="text-xs border-yellow-400 text-yellow-600">
                                     Service urgent
                                   </Badge>
                                 )}
@@ -579,7 +563,7 @@ const ClientDashboard = () => {
                                   <Button
                                     size="sm"
                                     onClick={() => navigate(`/client/book-service/${service.id}`)}
-                                    className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
                                   >
                                     Réserver
                                   </Button>
@@ -640,7 +624,7 @@ const ClientDashboard = () => {
                   </p>
                   <Button
                     onClick={() => setActiveTab("discover")}
-                    className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     <Search size={16} className="mr-2" />
                     Découvrir les services
@@ -710,7 +694,7 @@ const ClientDashboard = () => {
                                 <Button
                                   size="sm"
                                   onClick={() => navigate(`/client/book-service/${service.id}`)}
-                                  className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
                                 >
                                   Réserver
                                 </Button>
@@ -745,7 +729,6 @@ const ClientDashboard = () => {
         {activeTab === "bookings" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Réservations</h2>
-
             {bookings.length === 0 ? (
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
                 <CardContent className="text-center py-12">
@@ -756,7 +739,7 @@ const ClientDashboard = () => {
                   </p>
                   <Button
                     onClick={() => setActiveTab("discover")}
-                    className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     <Search size={16} className="mr-2" />
                     Découvrir les services
@@ -776,7 +759,7 @@ const ClientDashboard = () => {
                             </h3>
                             <Badge className={getStatusColor(booking.status)}>{getStatusText(booking.status)}</Badge>
                             {booking.isUrgent && (
-                              <Badge variant="outline" className="border-orange-400 text-orange-600">
+                              <Badge variant="outline" className="border-yellow-400 text-yellow-600">
                                 Urgent
                               </Badge>
                             )}
@@ -894,9 +877,7 @@ const ClientDashboard = () => {
                   <p className="text-slate-600 dark:text-slate-400">{client?.adresse || "Non renseigné"}</p>
                 </div>
 
-                <Button className="mt-4 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900">
-                  Modifier le profil
-                </Button>
+                <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white">Modifier le profil</Button>
               </CardContent>
             </Card>
           </div>
@@ -907,3 +888,5 @@ const ClientDashboard = () => {
 }
 
 export default ClientDashboard
+
+

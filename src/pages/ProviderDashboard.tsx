@@ -57,18 +57,6 @@ const ProviderDashboard = () => {
 
   const provider = currentUser as Provider
 
-  // Appliquer la couleur de fond au body pour éviter les couleurs parasites
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark")
-    document.body.style.backgroundColor = isDark ? "#0f172a" : "#ffffff"
-    document.documentElement.style.backgroundColor = isDark ? "#0f172a" : "#ffffff"
-
-    return () => {
-      document.body.style.backgroundColor = ""
-      document.documentElement.style.backgroundColor = ""
-    }
-  }, [])
-
   useEffect(() => {
     console.log("ProviderDashboard - useEffect déclenché", { currentUser, userType })
     if (!currentUser || userType !== "provider") {
@@ -76,6 +64,7 @@ const ProviderDashboard = () => {
       navigate("/provider/login")
       return
     }
+
     loadData()
   }, [])
 
@@ -90,7 +79,6 @@ const ProviderDashboard = () => {
       console.log("Début du chargement des données prestataire...")
       setIsLoading(true)
       setError("")
-
       if (!provider?.id) {
         console.error("ID prestataire manquant")
         setError("Erreur: ID prestataire manquant")
@@ -155,7 +143,7 @@ const ProviderDashboard = () => {
   const getStatusColor = (status: Booking["status"]) => {
     switch (status) {
       case "pending":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400"
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
       case "confirmed":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
       case "completed":
@@ -195,6 +183,7 @@ const ProviderDashboard = () => {
 
       setSuccessMessage(messages[action])
       setShowSuccess(true)
+
       await loadData()
 
       setTimeout(() => {
@@ -227,7 +216,7 @@ const ProviderDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full bg-white dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-white mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Chargement de votre espace prestataire...</p>
@@ -238,7 +227,7 @@ const ProviderDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen w-full bg-white dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-500 mb-4">
             <AlertCircle size={48} className="mx-auto" />
@@ -262,11 +251,11 @@ const ProviderDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-white dark:bg-slate-900" style={{ backgroundColor: "inherit" }}>
+    <div className="min-h-screen bg-stone-50 dark:bg-slate-900">
       <ThemeToggle />
 
       {/* Header */}
-      <div className="w-full border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700 relative z-10">
+      <div className="border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
@@ -288,7 +277,7 @@ const ProviderDashboard = () => {
               variant="ghost"
               size="icon"
               onClick={() => navigate("/ai-chat")}
-              className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
               title="Assistant IA"
             >
               <Bot size={20} />
@@ -305,42 +294,40 @@ const ProviderDashboard = () => {
         </div>
 
         {/* Navigation */}
-        <div className="w-full bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700 relative z-10">
-          <div className="flex gap-1 px-4 pb-4 overflow-x-auto scrollbar-hide">
-            {[
-              { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
-              { id: "services", label: "Mes Services", icon: Briefcase },
-              { id: "bookings", label: "Réservations", icon: Calendar },
-              { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
-              { id: "profile", label: "Profil", icon: User },
-            ].map((tab) => (
-              <Button
-                key={tab.id}
-                variant={activeTab === tab.id ? "default" : "ghost"}
-                size="sm"
-                onClick={() => {
-                  if (tab.id === "messages") {
-                    navigate("/messages")
-                  } else {
-                    setActiveTab(tab.id)
-                  }
-                }}
-                className={`flex items-center gap-2 whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                } relative`}
-              >
-                <tab.icon size={16} />
-                {tab.label}
-                {tab.badge && tab.badge > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
-                    {tab.badge > 9 ? "9+" : tab.badge}
-                  </Badge>
-                )}
-              </Button>
-            ))}
-          </div>
+        <div className="flex gap-1 px-4 pb-4">
+          {[
+            { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
+            { id: "services", label: "Mes Services", icon: Briefcase },
+            { id: "bookings", label: "Réservations", icon: Calendar },
+            { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
+            { id: "profile", label: "Profil", icon: User },
+          ].map((tab) => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? "default" : "ghost"}
+              size="sm"
+              onClick={() => {
+                if (tab.id === "messages") {
+                  navigate("/messages")
+                } else {
+                  setActiveTab(tab.id)
+                }
+              }}
+              className={`flex items-center gap-2 ${
+                activeTab === tab.id
+                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              } relative`}
+            >
+              <tab.icon size={16} />
+              {tab.label}
+              {tab.badge && tab.badge > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
+                  {tab.badge > 9 ? "9+" : tab.badge}
+                </Badge>
+              )}
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -358,8 +345,7 @@ const ProviderDashboard = () => {
         </div>
       )}
 
-      {/* Contenu principal */}
-      <div className="w-full p-4 max-w-6xl mx-auto bg-white dark:bg-slate-900">
+      <div className="p-4 max-w-6xl mx-auto">
         {activeTab === "overview" && (
           <div className="space-y-6">
             {/* Stats Cards */}
@@ -378,10 +364,10 @@ const ProviderDashboard = () => {
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-orange-600" />
+                    <Clock className="h-4 w-4 text-yellow-600" />
                     <span className="text-sm text-slate-600 dark:text-slate-400">En attente</span>
                   </div>
-                  <div className="text-2xl font-bold text-orange-600">{stats.pendingBookings}</div>
+                  <div className="text-2xl font-bold text-yellow-600">{stats.pendingBookings}</div>
                   <p className="text-xs text-slate-600 dark:text-slate-400">À traiter</p>
                 </CardContent>
               </Card>
