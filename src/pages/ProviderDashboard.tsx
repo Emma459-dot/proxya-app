@@ -215,7 +215,7 @@ const ProviderDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-white mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Chargement de votre espace prestataire...</p>
@@ -226,7 +226,7 @@ const ProviderDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-500 mb-4">
             <AlertCircle size={48} className="mx-auto" />
@@ -250,11 +250,11 @@ const ProviderDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 overflow-x-hidden">
+    <div className="min-h-screen bg-stone-50 dark:bg-slate-900">
       <ThemeToggle />
 
-      {/* Header */}
-      <div className="w-full border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+      {/* Header avec fond étendu */}
+      <div className="border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
@@ -292,41 +292,43 @@ const ProviderDashboard = () => {
           </div>
         </div>
 
-        {/* Navigation */}
-        <div className="flex gap-1 px-4 pb-4 overflow-x-auto">
-          {[
-            { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
-            { id: "services", label: "Mes Services", icon: Briefcase },
-            { id: "bookings", label: "Réservations", icon: Calendar },
-            { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
-            { id: "profile", label: "Profil", icon: User },
-          ].map((tab) => (
-            <Button
-              key={tab.id}
-              variant={activeTab === tab.id ? "default" : "ghost"}
-              size="sm"
-              onClick={() => {
-                if (tab.id === "messages") {
-                  navigate("/messages")
-                } else {
-                  setActiveTab(tab.id)
-                }
-              }}
-              className={`flex items-center gap-2 whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              } relative`}
-            >
-              <tab.icon size={16} />
-              {tab.label}
-              {tab.badge && tab.badge > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
-                  {tab.badge > 9 ? "9+" : tab.badge}
-                </Badge>
-              )}
-            </Button>
-          ))}
+        {/* Navigation avec scroll horizontal et fond étendu */}
+        <div className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+          <div className="flex gap-1 px-4 pb-4 overflow-x-auto">
+            {[
+              { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
+              { id: "services", label: "Mes Services", icon: Briefcase },
+              { id: "bookings", label: "Réservations", icon: Calendar },
+              { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
+              { id: "profile", label: "Profil", icon: User },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? "default" : "ghost"}
+                size="sm"
+                onClick={() => {
+                  if (tab.id === "messages") {
+                    navigate("/messages")
+                  } else {
+                    setActiveTab(tab.id)
+                  }
+                }}
+                className={`flex items-center gap-2 whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                } relative`}
+              >
+                <tab.icon size={16} />
+                {tab.label}
+                {tab.badge && tab.badge > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
+                    {tab.badge > 9 ? "9+" : tab.badge}
+                  </Badge>
+                )}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -344,477 +346,491 @@ const ProviderDashboard = () => {
         </div>
       )}
 
-      <div className="w-full p-4 max-w-6xl mx-auto bg-stone-50 dark:bg-slate-900">
-        {activeTab === "overview" && (
-          <div className="space-y-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">Total</span>
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalBookings}</div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">Réservations</p>
-                </CardContent>
-              </Card>
+      {/* Contenu principal avec fond étendu */}
+      <div className="bg-stone-50 dark:bg-slate-900">
+        <div className="p-4 max-w-6xl mx-auto">
+          {activeTab === "overview" && (
+            <div className="space-y-6">
+              {/* Stats Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Total</span>
+                    </div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalBookings}</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Réservations</p>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">En attente</span>
-                  </div>
-                  <div className="text-2xl font-bold text-yellow-600">{stats.pendingBookings}</div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">À traiter</p>
-                </CardContent>
-              </Card>
+                <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-yellow-600" />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">En attente</span>
+                    </div>
+                    <div className="text-2xl font-bold text-yellow-600">{stats.pendingBookings}</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">À traiter</p>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-green-600" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">Terminées</span>
-                  </div>
-                  <div className="text-2xl font-bold text-green-600">{stats.completedBookings}</div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">Missions</p>
-                </CardContent>
-              </Card>
+                <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Star className="h-4 w-4 text-green-600" />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Terminées</span>
+                    </div>
+                    <div className="text-2xl font-bold text-green-600">{stats.completedBookings}</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Missions</p>
+                  </CardContent>
+                </Card>
 
-              <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">Revenus</span>
-                  </div>
-                  <div className="text-2xl font-bold text-blue-600">{stats.revenue} FCFA</div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">Ce mois</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Réservations récentes */}
-            <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between text-slate-900 dark:text-white">
-                  <span>Réservations récentes</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setActiveTab("bookings")}
-                    className="border-stone-200 dark:border-slate-700"
-                  >
-                    Voir tout
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {bookings.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
-                    <p className="text-slate-600 dark:text-slate-400 text-sm">
-                      Vos réservations apparaîtront ici une fois que les clients commenceront à réserver vos services.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {bookings.slice(0, 3).map((booking) => (
-                      <div
-                        key={booking.id}
-                        className="flex items-center justify-between p-3 border border-stone-200 dark:border-slate-700 rounded-lg"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-slate-900 dark:text-white">
-                              Réservation #{booking.id?.slice(-6)}
-                            </span>
-                            <Badge className={getStatusColor(booking.status)}>{getStatusText(booking.status)}</Badge>
-                          </div>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">
-                            {new Date(booking.date).toLocaleDateString()} à {booking.time}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-semibold text-slate-900 dark:text-white">{booking.totalPrice} FCFA</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === "bookings" && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Réservations</h2>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="border-stone-200 dark:border-slate-700 bg-transparent">
-                  <Filter size={16} className="mr-2" />
-                  Filtrer
-                </Button>
-                <Button variant="outline" size="sm" className="border-stone-200 dark:border-slate-700 bg-transparent">
-                  <Search size={16} className="mr-2" />
-                  Rechercher
-                </Button>
+                <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Revenus</span>
+                    </div>
+                    <div className="text-2xl font-bold text-blue-600">{stats.revenue} FCFA</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">Ce mois</p>
+                  </CardContent>
+                </Card>
               </div>
-            </div>
 
-            {bookings.length === 0 ? (
+              {/* Réservations récentes */}
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="text-center py-12">
-                  <Calendar className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-6">
-                    Vous n'avez pas encore de réservations. Créez vos services pour commencer à recevoir des demandes.
-                  </p>
-                  <Button
-                    onClick={() => navigate("/provider/create-service")}
-                    className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
-                  >
-                    <Plus size={16} className="mr-2" />
-                    Créer un service
-                  </Button>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between text-slate-900 dark:text-white">
+                    <span>Réservations récentes</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("bookings")}
+                      className="border-stone-200 dark:border-slate-700"
+                    >
+                      Voir tout
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {bookings.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                      <h3 className="font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">
+                        Vos réservations apparaîtront ici une fois que les clients commenceront à réserver vos services.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {bookings.slice(0, 3).map((booking) => (
+                        <div
+                          key={booking.id}
+                          className="flex items-center justify-between p-3 border border-stone-200 dark:border-slate-700 rounded-lg"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium text-slate-900 dark:text-white">
+                                Réservation #{booking.id?.slice(-6)}
+                              </span>
+                              <Badge className={getStatusColor(booking.status)}>{getStatusText(booking.status)}</Badge>
+                            </div>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                              {new Date(booking.date).toLocaleDateString()} à {booking.time}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-semibold text-slate-900 dark:text-white">
+                              {booking.totalPrice} FCFA
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-            ) : (
-              <div className="grid gap-4">
-                {bookings.map((booking) => (
-                  <Card key={booking.id} className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-semibold text-slate-900 dark:text-white">
-                              Réservation #{booking.id?.slice(-6)}
-                            </h3>
-                            <Badge className={getStatusColor(booking.status)}>{getStatusText(booking.status)}</Badge>
-                          </div>
-                          <p className="text-slate-600 dark:text-slate-400">
-                            {new Date(booking.date).toLocaleDateString()} à {booking.time}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                            {booking.totalPrice} FCFA
-                          </div>
-                        </div>
-                      </div>
+            </div>
+          )}
 
-                      {booking.notes && (
-                        <div className="mb-4">
-                          <h4 className="font-medium mb-1 text-slate-900 dark:text-white">Notes du client :</h4>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">{booking.notes}</p>
+          {activeTab === "bookings" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Réservations</h2>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" className="border-stone-200 dark:border-slate-700 bg-transparent">
+                    <Filter size={16} className="mr-2" />
+                    Filtrer
+                  </Button>
+                  <Button variant="outline" size="sm" className="border-stone-200 dark:border-slate-700 bg-transparent">
+                    <Search size={16} className="mr-2" />
+                    Rechercher
+                  </Button>
+                </div>
+              </div>
+
+              {bookings.length === 0 ? (
+                <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+                  <CardContent className="text-center py-12">
+                    <Calendar className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
+                    <p className="text-slate-600 dark:text-slate-400 mb-6">
+                      Vous n'avez pas encore de réservations. Créez vos services pour commencer à recevoir des demandes.
+                    </p>
+                    <Button
+                      onClick={() => navigate("/provider/create-service")}
+                      className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                    >
+                      <Plus size={16} className="mr-2" />
+                      Créer un service
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-4">
+                  {bookings.map((booking) => (
+                    <Card
+                      key={booking.id}
+                      className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="font-semibold text-slate-900 dark:text-white">
+                                Réservation #{booking.id?.slice(-6)}
+                              </h3>
+                              <Badge className={getStatusColor(booking.status)}>{getStatusText(booking.status)}</Badge>
+                            </div>
+                            <p className="text-slate-600 dark:text-slate-400">
+                              {new Date(booking.date).toLocaleDateString()} à {booking.time}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                              {booking.totalPrice} FCFA
+                            </div>
+                          </div>
                         </div>
-                      )}
-                      <div className="flex gap-2">
-                        {booking.status === "pending" && (
-                          <>
+
+                        {booking.notes && (
+                          <div className="mb-4">
+                            <h4 className="font-medium mb-1 text-slate-900 dark:text-white">Notes du client :</h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">{booking.notes}</p>
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          {booking.status === "pending" && (
+                            <>
+                              <Button
+                                size="sm"
+                                onClick={() => handleBookingAction(booking.id!, "confirmed")}
+                                disabled={!!loadingBookings[booking.id!]}
+                                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50"
+                              >
+                                {loadingBookings[booking.id!] === "confirmed" ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    Acceptation...
+                                  </>
+                                ) : (
+                                  "Accepter"
+                                )}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleBookingAction(booking.id!, "cancelled")}
+                                disabled={!!loadingBookings[booking.id!]}
+                                className="border-stone-200 dark:border-slate-700 disabled:opacity-50"
+                              >
+                                {loadingBookings[booking.id!] === "cancelled" ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900 dark:border-white mr-2"></div>
+                                    Refus...
+                                  </>
+                                ) : (
+                                  "Refuser"
+                                )}
+                              </Button>
+                            </>
+                          )}
+                          {booking.status === "confirmed" && (
                             <Button
                               size="sm"
-                              onClick={() => handleBookingAction(booking.id!, "confirmed")}
+                              onClick={() => handleBookingAction(booking.id!, "completed")}
                               disabled={!!loadingBookings[booking.id!]}
                               className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50"
                             >
-                              {loadingBookings[booking.id!] === "confirmed" ? (
+                              {loadingBookings[booking.id!] === "completed" ? (
                                 <>
                                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                  Acceptation...
+                                  Finalisation...
                                 </>
                               ) : (
-                                "Accepter"
+                                "Marquer comme terminé"
                               )}
+                            </Button>
+                          )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-stone-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 bg-transparent"
+                            onClick={() => navigate(`/messages/${booking.clientId}`)}
+                          >
+                            <MessageSquare size={16} className="mr-2" />
+                            Contacter le client
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === "services" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Services</h2>
+                <Button
+                  onClick={() => navigate("/provider/create-service")}
+                  className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                >
+                  <Plus size={16} className="mr-2" />
+                  Créer un service
+                </Button>
+              </div>
+
+              {services.length === 0 ? (
+                <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+                  <CardContent className="text-center py-12">
+                    <Briefcase className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucun service</h3>
+                    <p className="text-slate-600 dark:text-slate-400 mb-6">
+                      Créez votre premier service pour commencer à recevoir des réservations.
+                    </p>
+                    <Button
+                      onClick={() => navigate("/provider/create-service")}
+                      className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                    >
+                      <Plus size={16} className="mr-2" />
+                      Créer un service
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {services.map((service) => (
+                    <Card
+                      key={service.id}
+                      className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-slate-900 dark:text-white mb-2">{service.title}</h3>
+                            <Badge
+                              variant="secondary"
+                              className="bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300 mb-2"
+                            >
+                              {service.category}
+                            </Badge>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => navigate(`/provider/service-preview/${service.id}`)}
+                              title="Voir l'aperçu"
+                            >
+                              <Eye size={14} />
                             </Button>
                             <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleBookingAction(booking.id!, "cancelled")}
-                              disabled={!!loadingBookings[booking.id!]}
-                              className="border-stone-200 dark:border-slate-700 disabled:opacity-50"
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => navigate(`/provider/edit-service/${service.id}`)}
+                              title="Modifier"
                             >
-                              {loadingBookings[booking.id!] === "cancelled" ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900 dark:border-white mr-2"></div>
-                                  Refus...
-                                </>
-                              ) : (
-                                "Refuser"
-                              )}
+                              <Edit size={14} />
                             </Button>
-                          </>
-                        )}
-                        {booking.status === "confirmed" && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleBookingAction(booking.id!, "completed")}
-                            disabled={!!loadingBookings[booking.id!]}
-                            className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50"
-                          >
-                            {loadingBookings[booking.id!] === "completed" ? (
-                              <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                Finalisation...
-                              </>
-                            ) : (
-                              "Marquer comme terminé"
-                            )}
-                          </Button>
-                        )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-stone-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 bg-transparent"
-                          onClick={() => navigate(`/messages/${booking.clientId}`)}
-                        >
-                          <MessageSquare size={16} className="mr-2" />
-                          Contacter le client
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === "services" && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Services</h2>
-              <Button
-                onClick={() => navigate("/provider/create-service")}
-                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
-              >
-                <Plus size={16} className="mr-2" />
-                Créer un service
-              </Button>
-            </div>
-
-            {services.length === 0 ? (
-              <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="text-center py-12">
-                  <Briefcase className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucun service</h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-6">
-                    Créez votre premier service pour commencer à recevoir des réservations.
-                  </p>
-                  <Button
-                    onClick={() => navigate("/provider/create-service")}
-                    className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
-                  >
-                    <Plus size={16} className="mr-2" />
-                    Créer un service
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {services.map((service) => (
-                  <Card key={service.id} className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-slate-900 dark:text-white mb-2">{service.title}</h3>
-                          <Badge
-                            variant="secondary"
-                            className="bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300 mb-2"
-                          >
-                            {service.category}
-                          </Badge>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => navigate(`/provider/service-preview/${service.id}`)}
-                            title="Voir l'aperçu"
-                          >
-                            <Eye size={14} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => navigate(`/provider/edit-service/${service.id}`)}
-                            title="Modifier"
-                          >
-                            <Edit size={14} />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-red-500 hover:text-red-700"
-                                title="Supprimer"
-                              >
-                                <Trash2 size={14} />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Supprimer le service</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Êtes-vous sûr de vouloir supprimer "{service.title}" ? Cette action est irréversible.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteService(service.id!)}
-                                  className="bg-red-600 hover:bg-red-700"
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-red-500 hover:text-red-700"
+                                  title="Supprimer"
                                 >
-                                  Supprimer
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
-
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">
-                        {service.description}
-                      </p>
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-2xl font-bold text-slate-900 dark:text-white">{service.price} FCFA</div>
-                          <div className="text-xs text-slate-600 dark:text-slate-400">{service.duration}min</div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                              service.isActive
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                                : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
-                            }`}
-                          >
-                            {service.isActive ? "Actif" : "Inactif"}
+                                  <Trash2 size={14} />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Supprimer le service</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Êtes-vous sûr de vouloir supprimer "{service.title}" ? Cette action est
+                                    irréversible.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDeleteService(service.id!)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Supprimer
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
-        {activeTab === "profile" && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mon Profil</h2>
-              <Button
-                onClick={() => navigate("/provider/my-profile")}
-                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
-              >
-                Voir mon profil complet
-              </Button>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">
+                          {service.description}
+                        </p>
+
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                              {service.price} FCFA
+                            </div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">{service.duration}min</div>
+                          </div>
+                          <div className="text-right">
+                            <div
+                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                                service.isActive
+                                  ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                  : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
+                              }`}
+                            >
+                              {service.isActive ? "Actif" : "Inactif"}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
+          )}
 
-            <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-900 dark:text-white">Aperçu du profil</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-lg">
-                      {provider?.prenom?.[0] || "P"}
-                      {provider?.nom?.[0] || "R"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900 dark:text-white">
-                      {provider?.prenom || "Prestataire"} {provider?.nom || ""}
-                    </h3>
-                    <p className="text-slate-600 dark:text-slate-400 capitalize">
-                      {provider?.expertise || "Non renseigné"}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            size={14}
-                            className={`${
-                              star <= (provider?.rating || 0)
-                                ? "fill-yellow-400 text-yellow-400"
-                                : "text-gray-300 dark:text-gray-600"
-                            }`}
-                          />
-                        ))}
+          {activeTab === "profile" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mon Profil</h2>
+                <Button
+                  onClick={() => navigate("/provider/my-profile")}
+                  className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                >
+                  Voir mon profil complet
+                </Button>
+              </div>
+
+              <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-slate-900 dark:text-white">Aperçu du profil</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-lg">
+                        {provider?.prenom?.[0] || "P"}
+                        {provider?.nom?.[0] || "R"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-slate-900 dark:text-white">
+                        {provider?.prenom || "Prestataire"} {provider?.nom || ""}
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-400 capitalize">
+                        {provider?.expertise || "Non renseigné"}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              size={14}
+                              className={`${
+                                star <= (provider?.rating || 0)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300 dark:text-gray-600"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm font-medium text-slate-900 dark:text-white">
+                          {provider?.rating?.toFixed(1) || "5.0"}
+                        </span>
                       </div>
-                      <span className="text-sm font-medium text-slate-900 dark:text-white">
-                        {provider?.rating?.toFixed(1) || "5.0"}
-                      </span>
                     </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-slate-600 dark:text-slate-400">Email:</span>
-                    <p className="font-medium text-slate-900 dark:text-white">{provider?.email || "Non renseigné"}</p>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-slate-600 dark:text-slate-400">Email:</span>
+                      <p className="font-medium text-slate-900 dark:text-white">{provider?.email || "Non renseigné"}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-600 dark:text-slate-400">Téléphone:</span>
+                      <p className="font-medium text-slate-900 dark:text-white">
+                        {provider?.telephone || "Non renseigné"}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-slate-600 dark:text-slate-400">Ville:</span>
+                      <p className="font-medium text-slate-900 dark:text-white">{provider?.ville || "Non renseigné"}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-600 dark:text-slate-400">Expérience:</span>
+                      <p className="font-medium text-slate-900 dark:text-white">{provider?.experience || 0} ans</p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-slate-600 dark:text-slate-400">Téléphone:</span>
-                    <p className="font-medium text-slate-900 dark:text-white">
-                      {provider?.telephone || "Non renseigné"}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-slate-600 dark:text-slate-400">Ville:</span>
-                    <p className="font-medium text-slate-900 dark:text-white">{provider?.ville || "Non renseigné"}</p>
-                  </div>
-                  <div>
-                    <span className="text-slate-600 dark:text-slate-400">Expérience:</span>
-                    <p className="font-medium text-slate-900 dark:text-white">{provider?.experience || 0} ans</p>
-                  </div>
-                </div>
 
-                <div>
-                  <span className="text-slate-600 dark:text-slate-400 text-sm">Catégories:</span>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {provider?.categories?.map((category) => (
-                      <Badge
-                        key={category}
-                        variant="secondary"
-                        className="bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300"
-                      >
-                        {category}
-                      </Badge>
-                    )) || <span className="text-slate-500 text-sm">Aucune catégorie</span>}
+                  <div>
+                    <span className="text-slate-600 dark:text-slate-400 text-sm">Catégories:</span>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {provider?.categories?.map((category) => (
+                        <Badge
+                          key={category}
+                          variant="secondary"
+                          className="bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300"
+                        >
+                          {category}
+                        </Badge>
+                      )) || <span className="text-slate-500 text-sm">Aucune catégorie</span>}
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex gap-3 pt-4">
-                  <Button
-                    onClick={() => navigate("/provider/my-profile")}
-                    className="flex-1 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
-                  >
-                    Voir mon profil complet
-                  </Button>
-                  <Button
-                    onClick={() => navigate("/provider/edit-profile")}
-                    variant="outline"
-                    className="flex-1 border-stone-200 dark:border-slate-700"
-                  >
-                    <Settings size={16} className="mr-2" />
-                    Modifier le profil
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      onClick={() => navigate("/provider/my-profile")}
+                      className="flex-1 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                    >
+                      Voir mon profil complet
+                    </Button>
+                    <Button
+                      onClick={() => navigate("/provider/edit-profile")}
+                      variant="outline"
+                      className="flex-1 border-stone-200 dark:border-slate-700"
+                    >
+                      <Settings size={16} className="mr-2" />
+                      Modifier le profil
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
