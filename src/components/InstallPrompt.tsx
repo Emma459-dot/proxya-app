@@ -4,19 +4,26 @@ import { useState, useEffect } from "react"
 import { X, Download, Share, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { usePWA } from "@/hooks/usePWA"
+import { usePWA } from "../hooks/usePWA"
 
-export default function InstallPrompt() {
+export function InstallPrompt() {
   const { isInstallable, isInstalled, isIOS, installApp } = usePWA()
   const [showPrompt, setShowPrompt] = useState(false)
   const [dismissed, setDismissed] = useState(false)
 
   useEffect(() => {
-    // Afficher le prompt après 3 secondes si l'app est installable et pas encore installée
+    // Vérifier si déjà refusé dans cette session
+    const alreadyDismissed = sessionStorage.getItem("pwa-prompt-dismissed")
+    if (alreadyDismissed) {
+      setDismissed(true)
+      return
+    }
+
+    // Afficher le prompt après 5 secondes si l'app est installable et pas encore installée
     if ((isInstallable || isIOS) && !isInstalled && !dismissed) {
       const timer = setTimeout(() => {
         setShowPrompt(true)
-      }, 3000)
+      }, 5000)
 
       return () => clearTimeout(timer)
     }
@@ -42,7 +49,7 @@ export default function InstallPrompt() {
   }
 
   // Ne pas afficher si déjà installé ou si l'utilisateur a refusé
-  if (isInstalled || !showPrompt || sessionStorage.getItem("pwa-prompt-dismissed")) {
+  if (isInstalled || !showPrompt || dismissed) {
     return null
   }
 
@@ -56,10 +63,8 @@ export default function InstallPrompt() {
                 <Download className="w-5 h-5 text-white" />
               </div>
             </div>
-
             <div className="flex-1">
               <h3 className="font-semibold text-slate-900 dark:text-white mb-1">Installer PROXYA</h3>
-
               {isIOS ? (
                 <div className="text-sm text-slate-600 dark:text-slate-400 mb-3">
                   <p className="mb-2">Pour installer l'app sur votre iPhone :</p>
@@ -77,7 +82,6 @@ export default function InstallPrompt() {
                   Installez l'app pour un accès rapide et une meilleure expérience.
                 </p>
               )}
-
               <div className="flex gap-2">
                 {!isIOS && (
                   <Button onClick={handleInstall} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
@@ -94,7 +98,6 @@ export default function InstallPrompt() {
                 </Button>
               </div>
             </div>
-
             <Button onClick={handleDismiss} variant="ghost" size="icon" className="flex-shrink-0 h-8 w-8">
               <X className="w-4 h-4" />
             </Button>
@@ -104,3 +107,5 @@ export default function InstallPrompt() {
     </div>
   )
 }
+
+export default InstallPrompt

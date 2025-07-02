@@ -64,7 +64,6 @@ const ProviderDashboard = () => {
       navigate("/provider/login")
       return
     }
-
     loadData()
   }, [])
 
@@ -79,6 +78,7 @@ const ProviderDashboard = () => {
       console.log("Début du chargement des données prestataire...")
       setIsLoading(true)
       setError("")
+
       if (!provider?.id) {
         console.error("ID prestataire manquant")
         setError("Erreur: ID prestataire manquant")
@@ -183,7 +183,6 @@ const ProviderDashboard = () => {
 
       setSuccessMessage(messages[action])
       setShowSuccess(true)
-
       await loadData()
 
       setTimeout(() => {
@@ -216,9 +215,9 @@ const ProviderDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 dark:border-white mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-white mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Chargement de votre espace prestataire...</p>
         </div>
       </div>
@@ -227,7 +226,7 @@ const ProviderDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-500 mb-4">
             <AlertCircle size={48} className="mx-auto" />
@@ -235,7 +234,10 @@ const ProviderDashboard = () => {
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Erreur de chargement</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-4">{error}</p>
           <div className="flex gap-2 justify-center">
-            <Button onClick={() => window.location.reload()} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+            >
               Rafraîchir
             </Button>
             <Button onClick={handleLogout} variant="outline">
@@ -248,15 +250,15 @@ const ProviderDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-slate-900">
+    <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 overflow-x-hidden">
       <ThemeToggle />
 
       {/* Header */}
-      <div className="border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+      <div className="w-full border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white">
+              <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900">
                 {provider?.prenom?.[0] || "P"}
                 {provider?.nom?.[0] || "R"}
               </AvatarFallback>
@@ -291,7 +293,7 @@ const ProviderDashboard = () => {
         </div>
 
         {/* Navigation */}
-        <div className="flex gap-1 px-4 pb-4">
+        <div className="flex gap-1 px-4 pb-4 overflow-x-auto">
           {[
             { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
             { id: "services", label: "Mes Services", icon: Briefcase },
@@ -310,9 +312,9 @@ const ProviderDashboard = () => {
                   setActiveTab(tab.id)
                 }
               }}
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white"
+                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               } relative`}
             >
@@ -342,7 +344,7 @@ const ProviderDashboard = () => {
         </div>
       )}
 
-      <div className="p-4 max-w-6xl mx-auto">
+      <div className="w-full p-4 max-w-6xl mx-auto bg-stone-50 dark:bg-slate-900">
         {activeTab === "overview" && (
           <div className="space-y-6">
             {/* Stats Cards */}
@@ -472,7 +474,7 @@ const ProviderDashboard = () => {
                   </p>
                   <Button
                     onClick={() => navigate("/provider/create-service")}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                    className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
                   >
                     <Plus size={16} className="mr-2" />
                     Créer un service
@@ -516,7 +518,7 @@ const ProviderDashboard = () => {
                               size="sm"
                               onClick={() => handleBookingAction(booking.id!, "confirmed")}
                               disabled={!!loadingBookings[booking.id!]}
-                              className="bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50"
+                              className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50"
                             >
                               {loadingBookings[booking.id!] === "confirmed" ? (
                                 <>
@@ -550,7 +552,7 @@ const ProviderDashboard = () => {
                             size="sm"
                             onClick={() => handleBookingAction(booking.id!, "completed")}
                             disabled={!!loadingBookings[booking.id!]}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50"
+                            className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50"
                           >
                             {loadingBookings[booking.id!] === "completed" ? (
                               <>
@@ -586,7 +588,7 @@ const ProviderDashboard = () => {
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Services</h2>
               <Button
                 onClick={() => navigate("/provider/create-service")}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
               >
                 <Plus size={16} className="mr-2" />
                 Créer un service
@@ -603,7 +605,7 @@ const ProviderDashboard = () => {
                   </p>
                   <Button
                     onClick={() => navigate("/provider/create-service")}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                    className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
                   >
                     <Plus size={16} className="mr-2" />
                     Créer un service
@@ -711,7 +713,7 @@ const ProviderDashboard = () => {
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mon Profil</h2>
               <Button
                 onClick={() => navigate("/provider/my-profile")}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
               >
                 Voir mon profil complet
               </Button>
@@ -724,7 +726,7 @@ const ProviderDashboard = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-16 w-16">
-                    <AvatarFallback className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white text-lg">
+                    <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-lg">
                       {provider?.prenom?.[0] || "P"}
                       {provider?.nom?.[0] || "R"}
                     </AvatarFallback>
@@ -796,7 +798,7 @@ const ProviderDashboard = () => {
                 <div className="flex gap-3 pt-4">
                   <Button
                     onClick={() => navigate("/provider/my-profile")}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+                    className="flex-1 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
                   >
                     Voir mon profil complet
                   </Button>

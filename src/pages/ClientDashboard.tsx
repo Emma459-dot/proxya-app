@@ -59,7 +59,6 @@ const ClientDashboard = () => {
       navigate("/client/login")
       return
     }
-
     loadData()
   }, [])
 
@@ -74,7 +73,6 @@ const ClientDashboard = () => {
     if (client?.id && services.length > 0) {
       const clientFavorites = FavoritesService.getFavorites(client.id)
       setFavorites(clientFavorites)
-
       // Filtrer les services favoris
       const favServices = services.filter((service) => clientFavorites.includes(service.id!))
       setFavoriteServices(favServices)
@@ -86,6 +84,7 @@ const ClientDashboard = () => {
       console.log("Début du chargement des données client...")
       setIsLoading(true)
       setError("")
+
       if (!client?.id) {
         console.error("ID client manquant")
         setError("Erreur: ID client manquant")
@@ -124,7 +123,6 @@ const ClientDashboard = () => {
               }
             }
           }
-
           setServices(allServices)
           setFilteredServices(allServices)
           console.log("Services chargés:", allServices.length)
@@ -246,7 +244,7 @@ const ClientDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 dark:border-white mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Chargement de votre espace client...</p>
@@ -257,7 +255,7 @@ const ClientDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-500 mb-4">
             <AlertCircle size={48} className="mx-auto" />
@@ -278,15 +276,15 @@ const ClientDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-slate-900">
+    <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 overflow-x-hidden">
       <ThemeToggle />
 
       {/* Header */}
-      <div className="border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+      <div className="w-full border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white">
+              <AvatarFallback className="bg-indigo-600 text-white dark:bg-white dark:text-slate-900">
                 {client?.prenom?.[0] || "C"}
                 {client?.nom?.[0] || "L"}
               </AvatarFallback>
@@ -321,7 +319,7 @@ const ClientDashboard = () => {
         </div>
 
         {/* Navigation */}
-        <div className="flex gap-1 px-4 pb-4">
+        <div className="flex gap-1 px-4 pb-4 overflow-x-auto">
           {[
             { id: "discover", label: "Découvrir", icon: Search },
             { id: "favorites", label: "Favoris", icon: Heart, badge: favorites.length },
@@ -340,9 +338,9 @@ const ClientDashboard = () => {
                   setActiveTab(tab.id)
                 }
               }}
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white"
+                  ? "bg-indigo-600 text-white dark:bg-white dark:text-slate-900"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               } relative`}
             >
@@ -358,7 +356,7 @@ const ClientDashboard = () => {
         </div>
       </div>
 
-      <div className="p-4 max-w-6xl mx-auto">
+      <div className="w-full p-4 max-w-6xl mx-auto bg-stone-50 dark:bg-slate-900">
         {activeTab === "discover" && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -729,6 +727,7 @@ const ClientDashboard = () => {
         {activeTab === "bookings" && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Réservations</h2>
+
             {bookings.length === 0 ? (
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
                 <CardContent className="text-center py-12">

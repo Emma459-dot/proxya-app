@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { AuthProvider } from "./context/AuthContext"
 
 // PWA Components
-import { InstallPrompt } from "./components/InstallPrompt"
+import InstallPrompt from "./components/InstallPrompt"
 
 // Pages
 import Welcome from "./pages/Welcome"
@@ -81,7 +81,6 @@ const App = () => (
             <Route path="/ai-chat" element={<AIChat />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-
           {/* PWA Install Prompt */}
           <InstallPrompt />
         </BrowserRouter>
