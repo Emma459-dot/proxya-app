@@ -60,8 +60,8 @@ const ProviderDashboard = () => {
   // Appliquer la couleur de fond au body pour éviter les couleurs parasites
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark")
-    document.body.style.backgroundColor = isDark ? "#0f172a" : "#fafaf9"
-    document.documentElement.style.backgroundColor = isDark ? "#0f172a" : "#fafaf9"
+    document.body.style.backgroundColor = isDark ? "#0f172a" : "#ffffff"
+    document.documentElement.style.backgroundColor = isDark ? "#0f172a" : "#ffffff"
 
     return () => {
       document.body.style.backgroundColor = ""
@@ -227,7 +227,7 @@ const ProviderDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen w-full bg-white dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-white mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Chargement de votre espace prestataire...</p>
@@ -238,7 +238,7 @@ const ProviderDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen w-full bg-white dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-500 mb-4">
             <AlertCircle size={48} className="mx-auto" />
@@ -262,11 +262,11 @@ const ProviderDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-stone-50 dark:bg-slate-900" style={{ backgroundColor: "inherit" }}>
+    <div className="min-h-screen w-full bg-white dark:bg-slate-900" style={{ backgroundColor: "inherit" }}>
       <ThemeToggle />
 
       {/* Header */}
-      <div className="w-full border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
+      <div className="w-full border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700 relative z-10">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
@@ -305,8 +305,8 @@ const ProviderDashboard = () => {
         </div>
 
         {/* Navigation */}
-        <div className="w-full bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-          <div className="flex gap-1 px-4 pb-4 overflow-x-auto">
+        <div className="w-full bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700 relative z-10">
+          <div className="flex gap-1 px-4 pb-4 overflow-x-auto scrollbar-hide">
             {[
               { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
               { id: "services", label: "Mes Services", icon: Briefcase },
@@ -359,7 +359,7 @@ const ProviderDashboard = () => {
       )}
 
       {/* Contenu principal */}
-      <div className="w-full p-4 max-w-6xl mx-auto bg-stone-50 dark:bg-slate-900">
+      <div className="w-full p-4 max-w-6xl mx-auto bg-white dark:bg-slate-900">
         {activeTab === "overview" && (
           <div className="space-y-6">
             {/* Stats Cards */}
