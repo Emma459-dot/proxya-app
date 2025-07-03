@@ -56,7 +56,6 @@ export default defineConfig({
         lang: "fr",
         dir: "ltr",
         icons: [
-          // Icons "any" - pour usage général
           {
             src: "/icons/icon-72x72.png",
             sizes: "72x72",
@@ -91,7 +90,7 @@ export default defineConfig({
             src: "/icons/icon-192x192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "any",
+            purpose: "any maskable",
           },
           {
             src: "/icons/icon-384x384.png",
@@ -99,32 +98,6 @@ export default defineConfig({
             type: "image/png",
             purpose: "any",
           },
-          {
-            src: "/icons/icon-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any",
-          },
-          // Icons "maskable" - pour Android (noms corrigés)
-          {
-            src: "/icons/maskable-icon-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable",
-          },
-          {
-            src: "/icons/maskable-icon-384x384.png",
-            sizes: "384x384",
-            type: "image/png",
-            purpose: "maskable",
-          },
-          {
-            src: "/icons/maskable-icon-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
-          // Icône combinée pour compatibilité maximale
           {
             src: "/icons/icon-512x512.png",
             sizes: "512x512",
