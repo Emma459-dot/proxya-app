@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  proxya-app:
+    image: emmanuellokadi/proxya-app:latest
+    ports:
+      - "8080:80"
+    restart: always
