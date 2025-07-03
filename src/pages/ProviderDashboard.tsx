@@ -12,7 +12,6 @@ import {
   TrendingUp,
   Plus,
   LogOut,
-  Search,
   Filter,
   Clock,
   Briefcase,
@@ -64,7 +63,6 @@ const ProviderDashboard = () => {
       navigate("/provider/login")
       return
     }
-
     loadData()
   }, [])
 
@@ -79,6 +77,7 @@ const ProviderDashboard = () => {
       console.log("Début du chargement des données prestataire...")
       setIsLoading(true)
       setError("")
+
       if (!provider?.id) {
         console.error("ID prestataire manquant")
         setError("Erreur: ID prestataire manquant")
@@ -183,7 +182,6 @@ const ProviderDashboard = () => {
 
       setSuccessMessage(messages[action])
       setShowSuccess(true)
-
       await loadData()
 
       setTimeout(() => {
@@ -216,8 +214,8 @@ const ProviderDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm mx-auto">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-white mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Chargement de votre espace prestataire...</p>
         </div>
@@ -227,8 +225,8 @@ const ProviderDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm mx-auto p-6">
           <div className="text-red-500 mb-4">
             <AlertCircle size={48} className="mx-auto" />
           </div>
@@ -254,142 +252,145 @@ const ProviderDashboard = () => {
     <div className="min-h-screen bg-stone-50 dark:bg-slate-900">
       <ThemeToggle />
 
-      {/* Header */}
-      <div className="border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900">
-                {provider?.prenom?.[0] || "P"}
-                {provider?.nom?.[0] || "R"}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="font-semibold text-slate-900 dark:text-white">
-                {provider?.prenom || "Prestataire"} {provider?.nom || ""}
-              </h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Prestataire</p>
+      {/* Header fixe avec largeur réduite */}
+      <div className="sticky top-0 z-50 bg-white dark:bg-slate-800 border-b border-stone-200 dark:border-slate-700 shadow-sm">
+        <div className="max-w-sm mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-sm">
+                  {provider?.prenom?.[0] || "P"}
+                  {provider?.nom?.[0] || "R"}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="font-semibold text-slate-900 dark:text-white text-sm">
+                  {provider?.prenom || "Prestataire"} {provider?.nom || ""}
+                </h1>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Prestataire</p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/ai-chat")}
-              className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
-              title="Assistant IA"
-            >
-              <Bot size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleLogout}
-              className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            >
-              <LogOut size={20} />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/ai-chat")}
+                className="h-8 w-8 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                title="Assistant IA"
+              >
+                <Bot size={16} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                className="h-8 w-8 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              >
+                <LogOut size={16} />
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Navigation */}
-        <div className="flex gap-1 px-4 pb-4">
-          {[
-            { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
-            { id: "services", label: "Mes Services", icon: Briefcase },
-            { id: "bookings", label: "Réservations", icon: Calendar },
-            { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
-            { id: "profile", label: "Profil", icon: User },
-          ].map((tab) => (
-            <Button
-              key={tab.id}
-              variant={activeTab === tab.id ? "default" : "ghost"}
-              size="sm"
-              onClick={() => {
-                if (tab.id === "messages") {
-                  navigate("/messages")
-                } else {
-                  setActiveTab(tab.id)
-                }
-              }}
-              className={`flex items-center gap-2 ${
-                activeTab === tab.id
-                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              } relative`}
-            >
-              <tab.icon size={16} />
-              {tab.label}
-              {tab.badge && tab.badge > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
-                  {tab.badge > 9 ? "9+" : tab.badge}
-                </Badge>
-              )}
-            </Button>
-          ))}
+        {/* Navigation compacte */}
+        <div className="max-w-sm mx-auto px-4 pb-3">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            {[
+              { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
+              { id: "services", label: "Services", icon: Briefcase },
+              { id: "bookings", label: "Réservations", icon: Calendar },
+              { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
+              { id: "profile", label: "Profil", icon: User },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? "default" : "ghost"}
+                size="sm"
+                onClick={() => {
+                  if (tab.id === "messages") {
+                    navigate("/messages")
+                  } else {
+                    setActiveTab(tab.id)
+                  }
+                }}
+                className={`flex items-center gap-1 whitespace-nowrap text-xs px-2 py-1 h-7 ${
+                  activeTab === tab.id
+                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                } relative`}
+              >
+                <tab.icon size={14} />
+                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.badge && tab.badge > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
+                    {tab.badge > 9 ? "9+" : tab.badge}
+                  </Badge>
+                )}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Notification de succès */}
       {showSuccess && (
-        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2">
-          <div className="bg-white dark:bg-slate-800 border border-green-200 dark:border-green-800 rounded-lg shadow-lg p-4 max-w-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex-shrink-0">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              </div>
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-top-2">
+          <div className="bg-white dark:bg-slate-800 border border-green-200 dark:border-green-800 rounded-lg shadow-lg p-3 max-w-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <p className="text-sm font-medium text-slate-900 dark:text-white">{successMessage}</p>
             </div>
           </div>
         </div>
       )}
 
-      <div className="p-4 max-w-6xl mx-auto">
+      {/* Contenu principal avec largeur réduite */}
+      <div className="max-w-sm mx-auto px-4 py-4">
         {activeTab === "overview" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">Total</span>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Calendar className="h-3 w-3 text-slate-600 dark:text-slate-400" />
+                    <span className="text-xs text-slate-600 dark:text-slate-400">Total</span>
                   </div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats.totalBookings}</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{stats.totalBookings}</div>
                   <p className="text-xs text-slate-600 dark:text-slate-400">Réservations</p>
                 </CardContent>
               </Card>
 
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">En attente</span>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Clock className="h-3 w-3 text-yellow-600" />
+                    <span className="text-xs text-slate-600 dark:text-slate-400">En attente</span>
                   </div>
-                  <div className="text-2xl font-bold text-yellow-600">{stats.pendingBookings}</div>
+                  <div className="text-lg font-bold text-yellow-600">{stats.pendingBookings}</div>
                   <p className="text-xs text-slate-600 dark:text-slate-400">À traiter</p>
                 </CardContent>
               </Card>
 
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-green-600" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">Terminées</span>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Star className="h-3 w-3 text-green-600" />
+                    <span className="text-xs text-slate-600 dark:text-slate-400">Terminées</span>
                   </div>
-                  <div className="text-2xl font-bold text-green-600">{stats.completedBookings}</div>
+                  <div className="text-lg font-bold text-green-600">{stats.completedBookings}</div>
                   <p className="text-xs text-slate-600 dark:text-slate-400">Missions</p>
                 </CardContent>
               </Card>
 
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm text-slate-600 dark:text-slate-400">Revenus</span>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <TrendingUp className="h-3 w-3 text-blue-600" />
+                    <span className="text-xs text-slate-600 dark:text-slate-400">Revenus</span>
                   </div>
-                  <div className="text-2xl font-bold text-blue-600">{stats.revenue} FCFA</div>
+                  <div className="text-sm font-bold text-blue-600">{stats.revenue} FCFA</div>
                   <p className="text-xs text-slate-600 dark:text-slate-400">Ce mois</p>
                 </CardContent>
               </Card>
@@ -397,48 +398,50 @@ const ProviderDashboard = () => {
 
             {/* Réservations récentes */}
             <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between text-slate-900 dark:text-white">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center justify-between text-slate-900 dark:text-white text-sm">
                   <span>Réservations récentes</span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setActiveTab("bookings")}
-                    className="border-stone-200 dark:border-slate-700"
+                    className="border-stone-200 dark:border-slate-700 text-xs h-6 px-2"
                   >
                     Voir tout
                   </Button>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-0">
                 {bookings.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <h3 className="font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
-                    <p className="text-slate-600 dark:text-slate-400 text-sm">
-                      Vos réservations apparaîtront ici une fois que les clients commenceront à réserver vos services.
-                    </p>
+                  <div className="text-center py-6">
+                    <Calendar className="h-8 w-8 text-slate-400 mx-auto mb-2" />
+                    <h3 className="font-semibold mb-1 text-slate-900 dark:text-white text-sm">Aucune réservation</h3>
+                    <p className="text-slate-600 dark:text-slate-400 text-xs">Vos réservations apparaîtront ici.</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {bookings.slice(0, 3).map((booking) => (
                       <div
                         key={booking.id}
-                        className="flex items-center justify-between p-3 border border-stone-200 dark:border-slate-700 rounded-lg"
+                        className="flex items-center justify-between p-2 border border-stone-200 dark:border-slate-700 rounded-lg"
                       >
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-slate-900 dark:text-white">
-                              Réservation #{booking.id?.slice(-6)}
+                            <span className="font-medium text-slate-900 dark:text-white text-xs truncate">
+                              #{booking.id?.slice(-6)}
                             </span>
-                            <Badge className={getStatusColor(booking.status)}>{getStatusText(booking.status)}</Badge>
+                            <Badge className={`${getStatusColor(booking.status)} text-xs px-1 py-0`}>
+                              {getStatusText(booking.status)}
+                            </Badge>
                           </div>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
                             {new Date(booking.date).toLocaleDateString()} à {booking.time}
                           </p>
                         </div>
                         <div className="text-right">
-                          <div className="font-semibold text-slate-900 dark:text-white">{booking.totalPrice} FCFA</div>
+                          <div className="font-semibold text-slate-900 dark:text-white text-xs">
+                            {booking.totalPrice} FCFA
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -450,28 +453,27 @@ const ProviderDashboard = () => {
         )}
 
         {activeTab === "bookings" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Réservations</h2>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="border-stone-200 dark:border-slate-700 bg-transparent">
-                  <Filter size={16} className="mr-2" />
-                  Filtrer
-                </Button>
-                <Button variant="outline" size="sm" className="border-stone-200 dark:border-slate-700 bg-transparent">
-                  <Search size={16} className="mr-2" />
-                  Rechercher
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Mes Réservations</h2>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-stone-200 dark:border-slate-700 text-xs h-7 px-2 bg-transparent"
+                >
+                  <Filter size={12} />
                 </Button>
               </div>
             </div>
 
             {bookings.length === 0 ? (
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="text-center py-12">
-                  <Calendar className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-6">
-                    Vous n'avez pas encore de réservations. Créez vos services pour commencer à recevoir des demandes.
+                <CardContent className="text-center py-8">
+                  <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
+                    Créez vos services pour commencer à recevoir des demandes.
                   </p>
                   <Button
                     onClick={() => navigate("/provider/create-service")}
@@ -483,68 +485,55 @@ const ProviderDashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4">
+              <div className="space-y-3">
                 {bookings.map((booking) => (
                   <Card key={booking.id} className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-semibold text-slate-900 dark:text-white">
-                              Réservation #{booking.id?.slice(-6)}
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                              #{booking.id?.slice(-6)}
                             </h3>
                             <Badge className={getStatusColor(booking.status)}>{getStatusText(booking.status)}</Badge>
                           </div>
-                          <p className="text-slate-600 dark:text-slate-400">
+                          <p className="text-slate-600 dark:text-slate-400 text-xs">
                             {new Date(booking.date).toLocaleDateString()} à {booking.time}
                           </p>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                          <div className="text-lg font-bold text-slate-900 dark:text-white">
                             {booking.totalPrice} FCFA
                           </div>
                         </div>
                       </div>
 
                       {booking.notes && (
-                        <div className="mb-4">
-                          <h4 className="font-medium mb-1 text-slate-900 dark:text-white">Notes du client :</h4>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">{booking.notes}</p>
+                        <div className="mb-3">
+                          <h4 className="font-medium mb-1 text-slate-900 dark:text-white text-xs">Notes du client :</h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">{booking.notes}</p>
                         </div>
                       )}
-                      <div className="flex gap-2">
+
+                      <div className="flex flex-wrap gap-2">
                         {booking.status === "pending" && (
                           <>
                             <Button
                               size="sm"
                               onClick={() => handleBookingAction(booking.id!, "confirmed")}
                               disabled={!!loadingBookings[booking.id!]}
-                              className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50"
+                              className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50 text-xs h-7 px-3"
                             >
-                              {loadingBookings[booking.id!] === "confirmed" ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                  Acceptation...
-                                </>
-                              ) : (
-                                "Accepter"
-                              )}
+                              {loadingBookings[booking.id!] === "confirmed" ? "..." : "Accepter"}
                             </Button>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleBookingAction(booking.id!, "cancelled")}
                               disabled={!!loadingBookings[booking.id!]}
-                              className="border-stone-200 dark:border-slate-700 disabled:opacity-50"
+                              className="border-stone-200 dark:border-slate-700 disabled:opacity-50 text-xs h-7 px-3"
                             >
-                              {loadingBookings[booking.id!] === "cancelled" ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900 dark:border-white mr-2"></div>
-                                  Refus...
-                                </>
-                              ) : (
-                                "Refuser"
-                              )}
+                              {loadingBookings[booking.id!] === "cancelled" ? "..." : "Refuser"}
                             </Button>
                           </>
                         )}
@@ -553,26 +542,19 @@ const ProviderDashboard = () => {
                             size="sm"
                             onClick={() => handleBookingAction(booking.id!, "completed")}
                             disabled={!!loadingBookings[booking.id!]}
-                            className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50"
+                            className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 disabled:opacity-50 text-xs h-7 px-3"
                           >
-                            {loadingBookings[booking.id!] === "completed" ? (
-                              <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                Finalisation...
-                              </>
-                            ) : (
-                              "Marquer comme terminé"
-                            )}
+                            {loadingBookings[booking.id!] === "completed" ? "..." : "Terminer"}
                           </Button>
                         )}
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-stone-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 bg-transparent"
+                          className="border-stone-200 dark:border-slate-700 text-xs h-7 px-3 bg-transparent"
                           onClick={() => navigate(`/messages/${booking.clientId}`)}
                         >
-                          <MessageSquare size={16} className="mr-2" />
-                          Contacter le client
+                          <MessageSquare size={12} className="mr-1" />
+                          Contact
                         </Button>
                       </div>
                     </CardContent>
@@ -584,25 +566,25 @@ const ProviderDashboard = () => {
         )}
 
         {activeTab === "services" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Services</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Mes Services</h2>
               <Button
                 onClick={() => navigate("/provider/create-service")}
-                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 text-xs h-8 px-3"
               >
-                <Plus size={16} className="mr-2" />
-                Créer un service
+                <Plus size={14} className="mr-1" />
+                Créer
               </Button>
             </div>
 
             {services.length === 0 ? (
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="text-center py-12">
-                  <Briefcase className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucun service</h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-6">
-                    Créez votre premier service pour commencer à recevoir des réservations.
+                <CardContent className="text-center py-8">
+                  <Briefcase className="h-12 w-12 text-slate-400 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">Aucun service</h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
+                    Créez votre premier service pour commencer.
                   </p>
                   <Button
                     onClick={() => navigate("/provider/create-service")}
@@ -614,16 +596,18 @@ const ProviderDashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="space-y-3">
                 {services.map((service) => (
                   <Card key={service.id} className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-slate-900 dark:text-white mb-2">{service.title}</h3>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-slate-900 dark:text-white mb-1 text-sm truncate">
+                            {service.title}
+                          </h3>
                           <Badge
                             variant="secondary"
-                            className="bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300 mb-2"
+                            className="bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300 mb-2 text-xs"
                           >
                             {service.category}
                           </Badge>
@@ -632,44 +616,44 @@ const ProviderDashboard = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-6 w-6"
                             onClick={() => navigate(`/provider/service-preview/${service.id}`)}
-                            title="Voir l'aperçu"
+                            title="Voir"
                           >
-                            <Eye size={14} />
+                            <Eye size={12} />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-6 w-6"
                             onClick={() => navigate(`/provider/edit-service/${service.id}`)}
                             title="Modifier"
                           >
-                            <Edit size={14} />
+                            <Edit size={12} />
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 text-red-500 hover:text-red-700"
+                                className="h-6 w-6 text-red-500 hover:text-red-700"
                                 title="Supprimer"
                               >
-                                <Trash2 size={14} />
+                                <Trash2 size={12} />
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent>
+                            <AlertDialogContent className="max-w-sm mx-auto">
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Supprimer le service</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Êtes-vous sûr de vouloir supprimer "{service.title}" ? Cette action est irréversible.
+                                <AlertDialogTitle className="text-sm">Supprimer le service</AlertDialogTitle>
+                                <AlertDialogDescription className="text-xs">
+                                  Supprimer "{service.title}" ? Cette action est irréversible.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogCancel className="text-xs h-8 px-3">Annuler</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleDeleteService(service.id!)}
-                                  className="bg-red-600 hover:bg-red-700"
+                                  className="bg-red-600 hover:bg-red-700 text-xs h-8 px-3"
                                 >
                                   Supprimer
                                 </AlertDialogAction>
@@ -679,13 +663,13 @@ const ProviderDashboard = () => {
                         </div>
                       </div>
 
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-3">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
                         {service.description}
                       </p>
 
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="text-2xl font-bold text-slate-900 dark:text-white">{service.price} FCFA</div>
+                          <div className="text-lg font-bold text-slate-900 dark:text-white">{service.price} FCFA</div>
                           <div className="text-xs text-slate-600 dark:text-slate-400">{service.duration}min</div>
                         </div>
                         <div className="text-right">
@@ -709,42 +693,42 @@ const ProviderDashboard = () => {
         )}
 
         {activeTab === "profile" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mon Profil</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Mon Profil</h2>
               <Button
                 onClick={() => navigate("/provider/my-profile")}
-                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                className="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 text-xs h-8 px-3"
               >
-                Voir mon profil complet
+                Voir profil
               </Button>
             </div>
 
             <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-900 dark:text-white">Aperçu du profil</CardTitle>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-slate-900 dark:text-white text-sm">Aperçu du profil</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-lg">
+              <CardContent className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback className="bg-slate-900 text-white dark:bg-white dark:text-slate-900">
                       {provider?.prenom?.[0] || "P"}
                       {provider?.nom?.[0] || "R"}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900 dark:text-white">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-slate-900 dark:text-white text-sm truncate">
                       {provider?.prenom || "Prestataire"} {provider?.nom || ""}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-400 capitalize">
+                    <p className="text-slate-600 dark:text-slate-400 capitalize text-xs truncate">
                       {provider?.expertise || "Non renseigné"}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-1 mt-1">
                       <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
                             key={star}
-                            size={14}
+                            size={12}
                             className={`${
                               star <= (provider?.rating || 0)
                                 ? "fill-yellow-400 text-yellow-400"
@@ -753,17 +737,19 @@ const ProviderDashboard = () => {
                           />
                         ))}
                       </div>
-                      <span className="text-sm font-medium text-slate-900 dark:text-white">
+                      <span className="text-xs font-medium text-slate-900 dark:text-white">
                         {provider?.rating?.toFixed(1) || "5.0"}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <span className="text-slate-600 dark:text-slate-400">Email:</span>
-                    <p className="font-medium text-slate-900 dark:text-white">{provider?.email || "Non renseigné"}</p>
+                    <p className="font-medium text-slate-900 dark:text-white truncate">
+                      {provider?.email || "Non renseigné"}
+                    </p>
                   </div>
                   <div>
                     <span className="text-slate-600 dark:text-slate-400">Téléphone:</span>
@@ -773,7 +759,9 @@ const ProviderDashboard = () => {
                   </div>
                   <div>
                     <span className="text-slate-600 dark:text-slate-400">Ville:</span>
-                    <p className="font-medium text-slate-900 dark:text-white">{provider?.ville || "Non renseigné"}</p>
+                    <p className="font-medium text-slate-900 dark:text-white truncate">
+                      {provider?.ville || "Non renseigné"}
+                    </p>
                   </div>
                   <div>
                     <span className="text-slate-600 dark:text-slate-400">Expérience:</span>
@@ -782,34 +770,34 @@ const ProviderDashboard = () => {
                 </div>
 
                 <div>
-                  <span className="text-slate-600 dark:text-slate-400 text-sm">Catégories:</span>
-                  <div className="flex flex-wrap gap-2 mt-1">
+                  <span className="text-slate-600 dark:text-slate-400 text-xs">Catégories:</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
                     {provider?.categories?.map((category) => (
                       <Badge
                         key={category}
                         variant="secondary"
-                        className="bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300"
+                        className="bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300 text-xs"
                       >
                         {category}
                       </Badge>
-                    )) || <span className="text-slate-500 text-sm">Aucune catégorie</span>}
+                    )) || <span className="text-slate-500 text-xs">Aucune catégorie</span>}
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-2 pt-2">
                   <Button
                     onClick={() => navigate("/provider/my-profile")}
-                    className="flex-1 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900"
+                    className="flex-1 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-stone-100 dark:text-slate-900 text-xs h-8"
                   >
-                    Voir mon profil complet
+                    Voir profil
                   </Button>
                   <Button
                     onClick={() => navigate("/provider/edit-profile")}
                     variant="outline"
-                    className="flex-1 border-stone-200 dark:border-slate-700"
+                    className="flex-1 border-stone-200 dark:border-slate-700 text-xs h-8"
                   >
-                    <Settings size={16} className="mr-2" />
-                    Modifier le profil
+                    <Settings size={12} className="mr-1" />
+                    Modifier
                   </Button>
                 </div>
               </CardContent>

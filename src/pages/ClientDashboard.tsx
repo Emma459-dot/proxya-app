@@ -59,7 +59,6 @@ const ClientDashboard = () => {
       navigate("/client/login")
       return
     }
-
     loadData()
   }, [])
 
@@ -74,7 +73,6 @@ const ClientDashboard = () => {
     if (client?.id && services.length > 0) {
       const clientFavorites = FavoritesService.getFavorites(client.id)
       setFavorites(clientFavorites)
-
       // Filtrer les services favoris
       const favServices = services.filter((service) => clientFavorites.includes(service.id!))
       setFavoriteServices(favServices)
@@ -86,6 +84,7 @@ const ClientDashboard = () => {
       console.log("Début du chargement des données client...")
       setIsLoading(true)
       setError("")
+
       if (!client?.id) {
         console.error("ID client manquant")
         setError("Erreur: ID client manquant")
@@ -124,7 +123,6 @@ const ClientDashboard = () => {
               }
             }
           }
-
           setServices(allServices)
           setFilteredServices(allServices)
           console.log("Services chargés:", allServices.length)
@@ -241,13 +239,13 @@ const ClientDashboard = () => {
     if (service.images && service.images.length > 0) {
       return service.images[0]
     }
-    return `/placeholder.svg?height=96&width=96&text=${encodeURIComponent(service.category)}`
+    return `/placeholder.svg?height=64&width=64&text=${encodeURIComponent(service.category)}`
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm mx-auto">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 dark:border-white mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400">Chargement de votre espace client...</p>
         </div>
@@ -257,8 +255,8 @@ const ClientDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm mx-auto p-6">
           <div className="text-red-500 mb-4">
             <AlertCircle size={48} className="mx-auto" />
           </div>
@@ -281,90 +279,95 @@ const ClientDashboard = () => {
     <div className="min-h-screen bg-stone-50 dark:bg-slate-900">
       <ThemeToggle />
 
-      {/* Header */}
-      <div className="border-b bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-indigo-600 text-white dark:bg-white dark:text-slate-900">
-                {client?.prenom?.[0] || "C"}
-                {client?.nom?.[0] || "L"}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="font-semibold text-slate-900 dark:text-white">
-                {client?.prenom || "Client"} {client?.nom || ""}
-              </h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Client</p>
+      {/* Header fixe avec largeur réduite */}
+      <div className="sticky top-0 z-50 bg-white dark:bg-slate-800 border-b border-stone-200 dark:border-slate-700 shadow-sm">
+        <div className="max-w-sm mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-indigo-600 text-white dark:bg-white dark:text-slate-900 text-sm">
+                  {client?.prenom?.[0] || "C"}
+                  {client?.nom?.[0] || "L"}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="font-semibold text-slate-900 dark:text-white text-sm">
+                  {client?.prenom || "Client"} {client?.nom || ""}
+                </h1>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Client</p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/ai-chat")}
-              className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
-              title="Assistant IA"
-            >
-              <Bot size={20} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleLogout}
-              className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            >
-              <LogOut size={20} />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/ai-chat")}
+                className="h-8 w-8 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                title="Assistant IA"
+              >
+                <Bot size={16} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                className="h-8 w-8 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              >
+                <LogOut size={16} />
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Navigation */}
-        <div className="flex gap-1 px-4 pb-4">
-          {[
-            { id: "discover", label: "Découvrir", icon: Search },
-            { id: "favorites", label: "Favoris", icon: Heart, badge: favorites.length },
-            { id: "bookings", label: "Mes réservations", icon: Calendar },
-            { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
-            { id: "profile", label: "Profil", icon: User },
-          ].map((tab) => (
-            <Button
-              key={tab.id}
-              variant={activeTab === tab.id ? "default" : "ghost"}
-              size="sm"
-              onClick={() => {
-                if (tab.id === "messages") {
-                  navigate("/messages")
-                } else {
-                  setActiveTab(tab.id)
-                }
-              }}
-              className={`flex items-center gap-2 ${
-                activeTab === tab.id
-                  ? "bg-indigo-600 text-white dark:bg-white dark:text-slate-900"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              } relative`}
-            >
-              <tab.icon size={16} />
-              {tab.label}
-              {tab.badge && tab.badge > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
-                  {tab.badge > 9 ? "9+" : tab.badge}
-                </Badge>
-              )}
-            </Button>
-          ))}
+        {/* Navigation compacte */}
+        <div className="max-w-sm mx-auto px-4 pb-3">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            {[
+              { id: "discover", label: "Découvrir", icon: Search },
+              { id: "favorites", label: "Favoris", icon: Heart, badge: favorites.length },
+              { id: "bookings", label: "Réservations", icon: Calendar },
+              { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
+              { id: "profile", label: "Profil", icon: User },
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? "default" : "ghost"}
+                size="sm"
+                onClick={() => {
+                  if (tab.id === "messages") {
+                    navigate("/messages")
+                  } else {
+                    setActiveTab(tab.id)
+                  }
+                }}
+                className={`flex items-center gap-1 whitespace-nowrap text-xs px-2 py-1 h-7 ${
+                  activeTab === tab.id
+                    ? "bg-indigo-600 text-white dark:bg-white dark:text-slate-900"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                } relative`}
+              >
+                <tab.icon size={14} />
+                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.badge && tab.badge > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 bg-red-500 text-white text-xs">
+                    {tab.badge > 9 ? "9+" : tab.badge}
+                  </Badge>
+                )}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="p-4 max-w-6xl mx-auto">
+      {/* Contenu principal avec largeur réduite */}
+      <div className="max-w-sm mx-auto px-4 py-4">
         {activeTab === "discover" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Découvrir les services</h2>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-slate-600 dark:text-slate-400">Recherche simple</span>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Découvrir</h2>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-600 dark:text-slate-400">Simple</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -372,12 +375,12 @@ const ClientDashboard = () => {
                   className="p-1"
                 >
                   {useAdvancedSearch ? (
-                    <ToggleRight size={24} className="text-indigo-600" />
+                    <ToggleRight size={20} className="text-indigo-600" />
                   ) : (
-                    <ToggleLeft size={24} className="text-slate-400" />
+                    <ToggleLeft size={20} className="text-slate-400" />
                   )}
                 </Button>
-                <span className="text-sm text-slate-600 dark:text-slate-400">Recherche avancée</span>
+                <span className="text-xs text-slate-600 dark:text-slate-400">Avancé</span>
               </div>
             </div>
 
@@ -389,16 +392,15 @@ const ClientDashboard = () => {
                     placeholder="Rechercher un service..."
                     value={searchQuery}
                     onChange={(e) => handleSimpleSearch(e.target.value)}
-                    className="pl-10 bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700"
+                    className="pl-10 bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700 text-sm h-9"
                   />
                 </div>
                 <Button
                   variant="outline"
                   onClick={() => setUseAdvancedSearch(true)}
-                  className="border-stone-200 dark:border-slate-700"
+                  className="border-stone-200 dark:border-slate-700 text-xs h-9 px-3"
                 >
-                  <Filter size={16} className="mr-2" />
-                  Filtres avancés
+                  <Filter size={14} />
                 </Button>
               </div>
             )}
@@ -413,15 +415,15 @@ const ClientDashboard = () => {
 
             {!useAdvancedSearch && (
               <div>
-                <h3 className="font-semibold mb-3 text-slate-900 dark:text-white">Catégories populaires</h3>
-                <div className="flex flex-wrap gap-2">
+                <h3 className="font-semibold mb-2 text-slate-900 dark:text-white text-sm">Catégories populaires</h3>
+                <div className="flex flex-wrap gap-1">
                   {["Beauté/Esthétique", "Alimentation", "Éducation", "Événementiel", "Maintenance"].map((category) => (
                     <Button
                       key={category}
                       variant="outline"
                       size="sm"
                       onClick={() => handleSimpleSearch(category)}
-                      className="border-stone-200 dark:border-slate-700"
+                      className="border-stone-200 dark:border-slate-700 text-xs h-7 px-2"
                     >
                       {category}
                     </Button>
@@ -431,39 +433,39 @@ const ClientDashboard = () => {
             )}
 
             <div>
-              <h3 className="font-semibold mb-3 text-slate-900 dark:text-white">
+              <h3 className="font-semibold mb-3 text-slate-900 dark:text-white text-sm">
                 Services disponibles
                 {(isSearching || isLoading) && (
                   <div className="inline-flex items-center ml-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-indigo-600"></div>
                   </div>
                 )}
               </h3>
 
               {filteredServices.length === 0 ? (
                 <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                  <CardContent className="text-center py-12">
-                    <Search className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucun service trouvé</h3>
-                    <p className="text-slate-600 dark:text-slate-400 mb-4">
+                  <CardContent className="text-center py-8">
+                    <Search className="h-12 w-12 text-slate-400 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">Aucun service trouvé</h3>
+                    <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
                       {useAdvancedSearch
                         ? "Essayez de modifier vos critères de recherche."
-                        : "Essayez de modifier votre recherche ou utilisez les filtres avancés."}
+                        : "Essayez de modifier votre recherche."}
                     </p>
                     {!useAdvancedSearch && (
                       <Button
                         onClick={() => setUseAdvancedSearch(true)}
                         variant="outline"
-                        className="border-stone-200 dark:border-slate-700"
+                        className="border-stone-200 dark:border-slate-700 text-xs h-8 px-3"
                       >
-                        <Filter size={16} className="mr-2" />
-                        Essayer la recherche avancée
+                        <Filter size={12} className="mr-1" />
+                        Recherche avancée
                       </Button>
                     )}
                   </CardContent>
                 </Card>
               ) : (
-                <div className="grid gap-4">
+                <div className="space-y-3">
                   {filteredServices.map((service) => {
                     const provider = getProviderForService(service.providerId)
                     if (!provider) return null
@@ -475,28 +477,28 @@ const ClientDashboard = () => {
                         key={service.id}
                         className="hover:shadow-lg transition-shadow cursor-pointer bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700"
                       >
-                        <CardContent className="p-6">
-                          <div className="flex items-start gap-4">
-                            <div className="w-24 h-24 bg-stone-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-16 h-16 bg-stone-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
                               <img
                                 src={getServiceImage(service) || "/placeholder.svg"}
                                 alt={service.title}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement
-                                  target.src = `/placeholder.svg?height=96&width=96&text=Service`
+                                  target.src = `/placeholder.svg?height=64&width=64&text=Service`
                                 }}
                               />
                             </div>
 
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between mb-2">
-                                <div>
-                                  <h3 className="font-semibold text-slate-900 dark:text-white text-lg">
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-semibold text-slate-900 dark:text-white text-sm truncate">
                                     {service.title}
                                   </h3>
-                                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-1">
-                                    <span>
+                                  <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 mb-1">
+                                    <span className="truncate">
                                       {provider.prenom} {provider.nom}
                                     </span>
                                     <div className="flex items-center gap-1">
@@ -504,16 +506,13 @@ const ClientDashboard = () => {
                                       <span className="font-medium">
                                         {service.averageRating || provider.rating || 5.0}
                                       </span>
-                                      {service.totalReviews && service.totalReviews > 0 && (
-                                        <span>({service.totalReviews})</span>
-                                      )}
                                     </div>
                                   </div>
-                                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                    <Clock size={12} />
+                                  <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                                    <Clock size={10} />
                                     <span>{service.duration}min</span>
-                                    <MapPin size={12} />
-                                    <span>
+                                    <MapPin size={10} />
+                                    <span className="truncate">
                                       {service.location === "domicile"
                                         ? "À domicile"
                                         : service.location === "salon"
@@ -527,15 +526,15 @@ const ClientDashboard = () => {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => toggleFavorite(service.id!)}
-                                  className={`${
+                                  className={`h-6 w-6 flex-shrink-0 ${
                                     isFavorite ? "text-red-500 hover:text-red-600" : "text-slate-400 hover:text-red-500"
                                   }`}
                                 >
-                                  <Heart size={16} className={isFavorite ? "fill-current" : ""} />
+                                  <Heart size={14} className={isFavorite ? "fill-current" : ""} />
                                 </Button>
                               </div>
 
-                              <div className="flex flex-wrap gap-1 mb-3">
+                              <div className="flex flex-wrap gap-1 mb-2">
                                 <Badge
                                   variant="secondary"
                                   className="text-xs bg-stone-200 text-slate-900 dark:bg-slate-700 dark:text-slate-300"
@@ -544,58 +543,46 @@ const ClientDashboard = () => {
                                 </Badge>
                                 {service.isUrgentAvailable && (
                                   <Badge variant="outline" className="text-xs border-yellow-400 text-yellow-600">
-                                    Service urgent
-                                  </Badge>
-                                )}
-                                {service.isGroupService && (
-                                  <Badge variant="outline" className="text-xs border-blue-400 text-blue-600">
-                                    Service de groupe
+                                    Urgent
                                   </Badge>
                                 )}
                               </div>
 
-                              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
+                              <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
                                 {service.description}
                               </p>
 
                               <div className="flex items-center justify-between">
-                                <div className="flex gap-2">
+                                <div className="flex gap-1">
                                   <Button
                                     size="sm"
                                     onClick={() => navigate(`/client/book-service/${service.id}`)}
-                                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-7 px-2"
                                   >
                                     Réserver
                                   </Button>
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="border-stone-200 dark:border-slate-700 bg-transparent"
+                                    className="border-stone-200 dark:border-slate-700 text-xs h-7 px-2 bg-transparent"
                                     onClick={() => navigate(`/messages/${provider.id}`)}
                                   >
-                                    <MessageSquare size={16} className="mr-2" />
-                                    Contacter
+                                    <MessageSquare size={12} />
                                   </Button>
                                   <Button
                                     size="sm"
                                     onClick={() => navigate(`/client/service-view/${service.id}`)}
                                     variant="outline"
-                                    className="border-stone-200 dark:border-slate-700"
+                                    className="border-stone-200 dark:border-slate-700 text-xs h-7 px-2"
                                   >
-                                    <Eye size={16} className="mr-2" />
-                                    Voir le service
+                                    <Eye size={12} />
                                   </Button>
                                 </div>
 
                                 <div className="text-right">
-                                  <div className="text-lg font-bold text-slate-900 dark:text-white">
+                                  <div className="text-sm font-bold text-slate-900 dark:text-white">
                                     {formatPrice(service.price)}
                                   </div>
-                                  {service.isGroupService && (
-                                    <div className="text-xs text-slate-600 dark:text-slate-400">
-                                      Réduction groupe disponible
-                                    </div>
-                                  )}
                                 </div>
                               </div>
                             </div>
@@ -611,28 +598,28 @@ const ClientDashboard = () => {
         )}
 
         {activeTab === "favorites" && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Favoris ({favorites.length})</h2>
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Mes Favoris ({favorites.length})</h2>
 
             {favoriteServices.length === 0 ? (
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="text-center py-12">
-                  <Heart className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucun favori</h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-6">
+                <CardContent className="text-center py-8">
+                  <Heart className="h-12 w-12 text-slate-400 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">Aucun favori</h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
                     Ajoutez des services à vos favoris en cliquant sur le cœur ❤️
                   </p>
                   <Button
                     onClick={() => setActiveTab("discover")}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-8 px-3"
                   >
-                    <Search size={16} className="mr-2" />
-                    Découvrir les services
+                    <Search size={12} className="mr-1" />
+                    Découvrir
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4">
+              <div className="space-y-3">
                 {favoriteServices.map((service) => {
                   const provider = getProviderForService(service.providerId)
                   if (!provider) return null
@@ -642,28 +629,28 @@ const ClientDashboard = () => {
                       key={service.id}
                       className="hover:shadow-lg transition-shadow cursor-pointer bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700"
                     >
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <div className="w-24 h-24 bg-stone-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-16 h-16 bg-stone-100 dark:bg-slate-700 rounded-lg overflow-hidden flex-shrink-0">
                             <img
                               src={getServiceImage(service) || "/placeholder.svg"}
                               alt={service.title}
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement
-                                target.src = `/placeholder.svg?height=96&width=96&text=Service`
+                                target.src = `/placeholder.svg?height=64&width=64&text=Service`
                               }}
                             />
                           </div>
 
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <h3 className="font-semibold text-slate-900 dark:text-white text-lg">
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-slate-900 dark:text-white text-sm truncate">
                                   {service.title}
                                 </h3>
-                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-1">
-                                  <span>
+                                <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 mb-1">
+                                  <span className="truncate">
                                     {provider.prenom} {provider.nom}
                                   </span>
                                   <div className="flex items-center gap-1">
@@ -679,38 +666,37 @@ const ClientDashboard = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => toggleFavorite(service.id!)}
-                                className="text-red-500 hover:text-red-600"
+                                className="h-6 w-6 text-red-500 hover:text-red-600 flex-shrink-0"
                               >
-                                <Heart size={16} className="fill-current" />
+                                <Heart size={14} className="fill-current" />
                               </Button>
                             </div>
 
-                            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
+                            <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
                               {service.description}
                             </p>
 
                             <div className="flex items-center justify-between">
-                              <div className="flex gap-2">
+                              <div className="flex gap-1">
                                 <Button
                                   size="sm"
                                   onClick={() => navigate(`/client/book-service/${service.id}`)}
-                                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-7 px-2"
                                 >
                                   Réserver
                                 </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="border-stone-200 dark:border-slate-700 bg-transparent"
+                                  className="border-stone-200 dark:border-slate-700 text-xs h-7 px-2 bg-transparent"
                                   onClick={() => navigate(`/messages/${provider.id}`)}
                                 >
-                                  <MessageSquare size={16} className="mr-2" />
-                                  Contacter
+                                  <MessageSquare size={12} />
                                 </Button>
                               </div>
 
                               <div className="text-right">
-                                <div className="text-lg font-bold text-slate-900 dark:text-white">
+                                <div className="text-sm font-bold text-slate-900 dark:text-white">
                                   {formatPrice(service.price)}
                                 </div>
                               </div>
@@ -727,109 +713,102 @@ const ClientDashboard = () => {
         )}
 
         {activeTab === "bookings" && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mes Réservations</h2>
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Mes Réservations</h2>
+
             {bookings.length === 0 ? (
               <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                <CardContent className="text-center py-12">
-                  <Calendar className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-6">
-                    Vous n'avez pas encore effectué de réservation. Découvrez nos services !
+                <CardContent className="text-center py-8">
+                  <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">Aucune réservation</h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
+                    Vous n'avez pas encore effectué de réservation.
                   </p>
                   <Button
                     onClick={() => setActiveTab("discover")}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-8 px-3"
                   >
-                    <Search size={16} className="mr-2" />
-                    Découvrir les services
+                    <Search size={12} className="mr-1" />
+                    Découvrir
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4">
+              <div className="space-y-3">
                 {bookings.map((booking) => (
                   <Card key={booking.id} className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-semibold text-slate-900 dark:text-white">
-                              Réservation #{booking.id?.slice(-6)}
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                              #{booking.id?.slice(-6)}
                             </h3>
                             <Badge className={getStatusColor(booking.status)}>{getStatusText(booking.status)}</Badge>
                             {booking.isUrgent && (
-                              <Badge variant="outline" className="border-yellow-400 text-yellow-600">
+                              <Badge variant="outline" className="border-yellow-400 text-yellow-600 text-xs">
                                 Urgent
                               </Badge>
                             )}
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                          <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
                             <div className="flex items-center gap-1">
-                              <Calendar size={14} />
+                              <Calendar size={12} />
                               {new Date(booking.date).toLocaleDateString()}
                             </div>
                             <div className="flex items-center gap-1">
-                              <Clock size={14} />
+                              <Clock size={12} />
                               {booking.time}
                             </div>
-                            {booking.groupSize && booking.groupSize > 1 && (
-                              <div className="flex items-center gap-1">
-                                <User size={14} />
-                                {booking.groupSize} personnes
-                              </div>
-                            )}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                          <div className="text-lg font-bold text-slate-900 dark:text-white">
                             {formatPrice(booking.totalPrice)}
                           </div>
-                          {booking.paymentMethod && (
-                            <div className="text-xs text-slate-600 dark:text-slate-400">{booking.paymentMethod}</div>
-                          )}
                         </div>
                       </div>
 
                       {booking.notes && (
-                        <div className="mb-4">
-                          <h4 className="font-medium mb-1 text-slate-900 dark:text-white">Vos notes :</h4>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">{booking.notes}</p>
+                        <div className="mb-3">
+                          <h4 className="font-medium mb-1 text-slate-900 dark:text-white text-xs">Vos notes :</h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">{booking.notes}</p>
                         </div>
                       )}
-                      <div className="flex gap-2">
+
+                      <div className="flex flex-wrap gap-2">
                         {booking.status === "completed" && !booking.hasReview && (
                           <Button
                             size="sm"
                             onClick={() => navigate(`/client/review/${booking.id}`)}
-                            className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white text-xs h-7 px-2"
                           >
-                            <Star size={16} className="mr-2" />
-                            Laisser un avis
+                            <Star size={12} className="mr-1" />
+                            Avis
                           </Button>
                         )}
                         {booking.status === "completed" && booking.hasReview && (
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-green-400 text-green-600 bg-transparent"
+                            className="border-green-400 text-green-600 text-xs h-7 px-2 bg-transparent"
                             disabled
                           >
-                            <Star size={16} className="mr-2 fill-green-600" />
+                            <Star size={12} className="mr-1 fill-green-600" />
                             Avis laissé
                           </Button>
                         )}
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-stone-200 dark:border-slate-700 bg-transparent"
+                          className="border-stone-200 dark:border-slate-700 text-xs h-7 px-2 bg-transparent"
                           onClick={() => navigate(`/messages/${booking.providerId}`)}
                         >
-                          <MessageSquare size={16} className="mr-2" />
-                          Contacter le prestataire
+                          <MessageSquare size={12} className="mr-1" />
+                          Contact
                         </Button>
                         {booking.status === "pending" && (
-                          <Button variant="destructive" size="sm">
+                          <Button variant="destructive" size="sm" className="text-xs h-7 px-2">
                             Annuler
                           </Button>
                         )}
@@ -843,41 +822,49 @@ const ClientDashboard = () => {
         )}
 
         {activeTab === "profile" && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mon Profil</h2>
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Mon Profil</h2>
 
             <Card className="bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-900 dark:text-white">Informations personnelles</CardTitle>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-slate-900 dark:text-white text-sm">Informations personnelles</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-slate-900 dark:text-white">Prénom</label>
-                    <p className="text-slate-600 dark:text-slate-400">{client?.prenom || "Non renseigné"}</p>
+                    <label className="text-xs font-medium text-slate-900 dark:text-white">Prénom</label>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm truncate">
+                      {client?.prenom || "Non renseigné"}
+                    </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-900 dark:text-white">Nom</label>
-                    <p className="text-slate-600 dark:text-slate-400">{client?.nom || "Non renseigné"}</p>
+                    <label className="text-xs font-medium text-slate-900 dark:text-white">Nom</label>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm truncate">
+                      {client?.nom || "Non renseigné"}
+                    </p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-slate-900 dark:text-white">Email</label>
-                  <p className="text-slate-600 dark:text-slate-400">{client?.email || "Non renseigné"}</p>
+                  <label className="text-xs font-medium text-slate-900 dark:text-white">Email</label>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm truncate">
+                    {client?.email || "Non renseigné"}
+                  </p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-slate-900 dark:text-white">Téléphone</label>
-                  <p className="text-slate-600 dark:text-slate-400">{client?.telephone || "Non renseigné"}</p>
+                  <label className="text-xs font-medium text-slate-900 dark:text-white">Téléphone</label>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">{client?.telephone || "Non renseigné"}</p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-slate-900 dark:text-white">Adresse</label>
-                  <p className="text-slate-600 dark:text-slate-400">{client?.adresse || "Non renseigné"}</p>
+                  <label className="text-xs font-medium text-slate-900 dark:text-white">Adresse</label>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">{client?.adresse || "Non renseigné"}</p>
                 </div>
 
-                <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white">Modifier le profil</Button>
+                <Button className="mt-3 bg-indigo-600 hover:bg-indigo-700 text-white w-full text-xs h-8">
+                  Modifier le profil
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -888,5 +875,3 @@ const ClientDashboard = () => {
 }
 
 export default ClientDashboard
-
-
