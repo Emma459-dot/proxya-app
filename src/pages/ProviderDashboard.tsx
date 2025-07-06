@@ -20,12 +20,14 @@ import {
   Eye,
   AlertCircle,
   Bot,
+  BarChart3,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import ThemeToggle from "../components/ThemeToggle"
+import AnalyticsDashboard from "../components/AnalyticsDashboard"
 import { useAuth } from "../context/AuthContext"
 import { bookingService, serviceService, messageService } from "../services/firebaseService"
 import type { Provider, Booking, Service } from "../types"
@@ -298,6 +300,7 @@ const ProviderDashboard = () => {
           <div className="flex gap-1 overflow-x-auto scrollbar-hide">
             {[
               { id: "overview", label: "Vue d'ensemble", icon: TrendingUp },
+              { id: "analytics", label: "Analytics", icon: BarChart3 },
               { id: "services", label: "Services", icon: Briefcase },
               { id: "bookings", label: "Réservations", icon: Calendar },
               { id: "messages", label: "Messages", icon: MessageSquare, badge: unreadMessages },
@@ -452,6 +455,13 @@ const ProviderDashboard = () => {
           </div>
         )}
 
+        {activeTab === "analytics" && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Analytics & Statistiques</h2>
+            <AnalyticsDashboard bookings={bookings} services={services} providerId={provider?.id || ""} />
+          </div>
+        )}
+
         {activeTab === "bookings" && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -537,6 +547,7 @@ const ProviderDashboard = () => {
                             </Button>
                           </>
                         )}
+
                         {booking.status === "confirmed" && (
                           <Button
                             size="sm"
@@ -547,6 +558,7 @@ const ProviderDashboard = () => {
                             {loadingBookings[booking.id!] === "completed" ? "..." : "Terminer"}
                           </Button>
                         )}
+
                         <Button
                           variant="outline"
                           size="sm"
@@ -612,6 +624,7 @@ const ProviderDashboard = () => {
                             {service.category}
                           </Badge>
                         </div>
+
                         <div className="flex gap-1">
                           <Button
                             variant="ghost"

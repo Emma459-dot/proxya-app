@@ -36,13 +36,28 @@ import AIChat from "./pages/AIChat"
 
 // Placeholder components pour les routes futures
 const NotFound = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="text-center">
-      <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-      <p className="text-gray-600 mb-4">Page non trouvée</p>
-      <a href="/" className="text-blue-500 hover:text-blue-600 underline">
-        Retour à l'accueil
-      </a>
+  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
+    <div className="text-center max-w-md mx-auto p-6">
+      <div className="text-6xl font-bold text-gray-300 dark:text-gray-600 mb-4">404</div>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Page non trouvée</h1>
+      <p className="text-gray-600 dark:text-gray-400 mb-6">
+        La page que vous recherchez n'existe pas ou a été déplacée.
+      </p>
+      <div className="space-y-2">
+        <a
+          href="/"
+          className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-colors"
+        >
+          Retour à l'accueil
+        </a>
+        <br />
+        <button
+          onClick={() => window.history.back()}
+          className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-200 underline text-sm"
+        >
+          Retour à la page précédente
+        </button>
+      </div>
     </div>
   </div>
 )
@@ -52,6 +67,11 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
     },
   },
 })
@@ -113,27 +133,39 @@ const App = () => {
           {!showSplashScreen && (
             <BrowserRouter>
               <Routes>
+                {/* Routes publiques */}
                 <Route path="/" element={<Welcome />} />
                 <Route path="/user-type" element={<UserTypeSelection />} />
+
+                {/* Routes d'authentification */}
                 <Route path="/provider/login" element={<ProviderLogin />} />
                 <Route path="/client/login" element={<ClientLogin />} />
+
+                {/* Routes prestataire */}
                 <Route path="/provider/dashboard" element={<ProviderDashboard />} />
-                <Route path="/client/dashboard" element={<ClientDashboard />} />
                 <Route path="/provider/create-service" element={<CreateService />} />
                 <Route path="/provider/service-preview/:serviceId" element={<ServicePreview />} />
                 <Route path="/provider/edit-service/:serviceId" element={<EditService />} />
-                <Route path="/client/book-service/:serviceId" element={<BookingPage />} />
-                <Route path="/client/service-view/:serviceId" element={<ServiceView />} />
-                <Route path="/messages" element={<MessagesPage />} />
-                <Route path="/messages/:userId" element={<MessagesPage />} />
-                <Route path="/client/review/:bookingId" element={<ReviewPage />} />
-                <Route path="/reviews/:providerId" element={<ReviewsPage />} />
-                <Route path="/provider-profile/:providerId" element={<ProviderProfile />} />
                 <Route path="/provider/my-profile" element={<MyProfile />} />
                 <Route path="/provider/edit-profile" element={<EditProfile />} />
+
+                {/* Routes client */}
+                <Route path="/client/dashboard" element={<ClientDashboard />} />
+                <Route path="/client/book-service/:serviceId" element={<BookingPage />} />
+                <Route path="/client/service-view/:serviceId" element={<ServiceView />} />
+                <Route path="/client/review/:bookingId" element={<ReviewPage />} />
+
+                {/* Routes communes */}
+                <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/messages/:userId" element={<MessagesPage />} />
+                <Route path="/reviews/:providerId" element={<ReviewsPage />} />
+                <Route path="/provider-profile/:providerId" element={<ProviderProfile />} />
                 <Route path="/ai-chat" element={<AIChat />} />
+
+                {/* Route 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+
               {/* PWA Install Prompt */}
               <InstallPrompt />
             </BrowserRouter>

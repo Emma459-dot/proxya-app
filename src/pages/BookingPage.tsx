@@ -16,7 +16,8 @@ import {
   AlertCircle,
   Phone,
   MessageSquare,
-  Tag,
+  Gift,
+  Percent,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,6 +31,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import ThemeToggle from "../components/ThemeToggle"
+import PromoCodeSystem from "../components/PromoCodeSystem"
 import { useAuth } from "../context/AuthContext"
 import { serviceService, providerService, bookingService } from "../services/firebaseService"
 import { formatPrice } from "../utils/currency"
@@ -45,10 +47,15 @@ const BookingPage = () => {
   const [isBooking, setIsBooking] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [appliedPromo, setAppliedPromo] = useState<{
+    code: string
+    discount: number
+    type: "percentage" | "fixed"
+  } | null>(null)
 
   const client = currentUser as Client
 
-  // CORRECTION : État du formulaire avec useCallback pour éviter les re-renders
+  // État du formulaire avec useCallback pour éviter les re-renders
   const [bookingData, setBookingData] = useState({
     date: "",
     time: "",
@@ -61,7 +68,7 @@ const BookingPage = () => {
     clientPhone: "",
   })
 
-  // NOUVEAU : Fonction stable pour mettre à jour les données de réservation
+  // Fonction stable pour mettre à jour les données de réservation
   const updateBookingData = useCallback((updates: Partial<typeof bookingData>) => {
     setBookingData((prev) => ({ ...prev, ...updates }))
   }, [])
@@ -71,7 +78,6 @@ const BookingPage = () => {
       navigate("/client/login")
       return
     }
-
     loadServiceData()
   }, [serviceId, currentUser, userType])
 
@@ -114,7 +120,6 @@ const BookingPage = () => {
 
   const calculateTotalPrice = useCallback(() => {
     if (!service) return 0
-
     const basePrice = service.price
     let total = basePrice
 
@@ -129,12 +134,20 @@ const BookingPage = () => {
       total *= service.urgentPriceMultiplier || 1.5
     }
 
+    // Application du code promo
+    if (appliedPromo) {
+      if (appliedPromo.type === "percentage") {
+        total = total * (1 - appliedPromo.discount / 100)
+      } else {
+        total = Math.max(0, total - appliedPromo.discount)
+      }
+    }
+
     return Math.round(total)
-  }, [service, bookingData.groupSize, bookingData.isUrgent])
+  }, [service, bookingData.groupSize, bookingData.isUrgent, appliedPromo])
 
   const getAvailableTimeSlots = () => {
     if (!service?.availability?.timeSlots) return []
-
     const selectedDate = new Date(bookingData.date)
     const dayName = selectedDate.toLocaleDateString("fr-FR", { weekday: "long" })
     const dayNameCapitalized = dayName.charAt(0).toUpperCase() + dayName.slice(1)
@@ -145,6 +158,16 @@ const BookingPage = () => {
     }
 
     return service.availability.timeSlots
+  }
+
+  const handlePromoApplied = (promoData: { code: string; discount: number; type: "percentage" | "fixed" }) => {
+    setAppliedPromo(promoData)
+    updateBookingData({ referralCode: promoData.code })
+  }
+
+  const handlePromoRemoved = () => {
+    setAppliedPromo(null)
+    updateBookingData({ referralCode: "" })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -167,7 +190,6 @@ const BookingPage = () => {
       const selectedDate = new Date(bookingData.date)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-
       if (selectedDate < today) {
         setError("Vous ne pouvez pas réserver pour une date passée")
         return
@@ -202,7 +224,6 @@ const BookingPage = () => {
 
       await bookingService.create(booking)
       setSuccess("Réservation créée avec succès !")
-
       // Rediriger vers le dashboard après 2 secondes
       setTimeout(() => {
         navigate("/client/dashboard")
@@ -263,12 +284,10 @@ const BookingPage = () => {
           <ArrowLeft size={20} />
           <span className="font-medium">Retour</span>
         </button>
-
         <div className="text-center">
           <h1 className="text-lg font-bold text-slate-900 dark:text-white">Réserver un service</h1>
           <p className="text-xs text-slate-600 dark:text-slate-400">PROXYA</p>
         </div>
-
         <div className="w-16"></div>
       </div>
 
@@ -463,27 +482,17 @@ const BookingPage = () => {
                     </Select>
                   </div>
 
-                  {/* NOUVEAU : Code de parrainage */}
+                  {/* Système de codes promo */}
                   <div className="space-y-2">
-                    <Label htmlFor="referral" className="text-slate-900 dark:text-white">
-                      Code de parrainage (optionnel)
+                    <Label className="text-slate-900 dark:text-white flex items-center gap-2">
+                      <Gift size={16} />
+                      Codes promo et parrainage
                     </Label>
-                    <div className="relative">
-                      <Tag size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <Input
-                        id="referral"
-                        type="text"
-                        placeholder="Code de parrainage pour une réduction"
-                        className="pl-10 bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700"
-                        value={bookingData.referralCode}
-                        onChange={(e) => updateBookingData({ referralCode: e.target.value })}
-                      />
-                    </div>
-                    {bookingData.referralCode && (
-                      <p className="text-xs text-green-600 dark:text-green-400">
-                        ✅ Code promo appliqué ! Réduction de 10%
-                      </p>
-                    )}
+                    <PromoCodeSystem
+                      onPromoApplied={handlePromoApplied}
+                      onPromoRemoved={handlePromoRemoved}
+                      servicePrice={service.price}
+                    />
                   </div>
 
                   {/* Notes */}
@@ -571,10 +580,18 @@ const BookingPage = () => {
                       </div>
                     )}
 
-                    {bookingData.referralCode && (
+                    {appliedPromo && (
                       <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-slate-400">Code promo</span>
-                        <span className="text-green-600">-10%</span>
+                        <span className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                          <Percent size={12} />
+                          Code promo ({appliedPromo.code})
+                        </span>
+                        <span className="text-green-600">
+                          -
+                          {appliedPromo.type === "percentage"
+                            ? `${appliedPromo.discount}%`
+                            : `${appliedPromo.discount} FCFA`}
+                        </span>
                       </div>
                     )}
 

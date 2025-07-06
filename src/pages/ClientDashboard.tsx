@@ -18,6 +18,7 @@ import {
   ToggleRight,
   AlertCircle,
   Bot,
+  Navigation,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,6 +27,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import ThemeToggle from "../components/ThemeToggle"
 import AdvancedSearch from "../components/AdvancedSearch"
+import GeolocationService from "../components/GeolocationService"
 import { useAuth } from "../context/AuthContext"
 import { bookingService, providerService, serviceService, messageService } from "../services/firebaseService"
 import { searchService } from "../services/searchService"
@@ -48,6 +50,7 @@ const ClientDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [unreadMessages, setUnreadMessages] = useState(0)
   const [useAdvancedSearch, setUseAdvancedSearch] = useState(false)
+  const [useGeolocation, setUseGeolocation] = useState(false)
   const [error, setError] = useState<string>("")
 
   const client = currentUser as Client
@@ -199,6 +202,17 @@ const ClientDashboard = () => {
     } finally {
       setIsSearching(false)
     }
+  }
+
+  const handleGeolocationSearch = (nearbyServices: Service[]) => {
+    setFilteredServices(nearbyServices)
+  }
+
+  const resetToOriginalServices = () => {
+    setFilteredServices(services)
+    setSearchQuery("")
+    setUseAdvancedSearch(false)
+    setUseGeolocation(false)
   }
 
   const getStatusColor = (status: Booking["status"]) => {
@@ -366,12 +380,30 @@ const ClientDashboard = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">Découvrir</h2>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetToOriginalServices}
+                  className="text-xs h-6 px-2"
+                  title="Réinitialiser"
+                >
+                  Reset
+                </Button>
+              </div>
+            </div>
+
+            {/* Options de recherche */}
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-600 dark:text-slate-400">Simple</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setUseAdvancedSearch(!useAdvancedSearch)}
+                  onClick={() => {
+                    setUseAdvancedSearch(!useAdvancedSearch)
+                    if (useGeolocation) setUseGeolocation(false)
+                  }}
                   className="p-1"
                 >
                   {useAdvancedSearch ? (
@@ -382,9 +414,23 @@ const ClientDashboard = () => {
                 </Button>
                 <span className="text-xs text-slate-600 dark:text-slate-400">Avancé</span>
               </div>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setUseGeolocation(!useGeolocation)
+                  if (useAdvancedSearch) setUseAdvancedSearch(false)
+                }}
+                className={`p-1 ${useGeolocation ? "text-indigo-600" : "text-slate-400"}`}
+                title="Recherche par géolocalisation"
+              >
+                <Navigation size={16} />
+              </Button>
             </div>
 
-            {!useAdvancedSearch && (
+            {/* Recherche simple */}
+            {!useAdvancedSearch && !useGeolocation && (
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
@@ -405,6 +451,7 @@ const ClientDashboard = () => {
               </div>
             )}
 
+            {/* Recherche avancée */}
             {useAdvancedSearch && (
               <AdvancedSearch
                 onFiltersChange={handleAdvancedSearch}
@@ -413,7 +460,17 @@ const ClientDashboard = () => {
               />
             )}
 
-            {!useAdvancedSearch && (
+            {/* Géolocalisation */}
+            {useGeolocation && (
+              <GeolocationService
+                services={services}
+                providers={providers}
+                onNearbyServicesFound={handleGeolocationSearch}
+              />
+            )}
+
+            {/* Catégories populaires */}
+            {!useAdvancedSearch && !useGeolocation && (
               <div>
                 <h3 className="font-semibold mb-2 text-slate-900 dark:text-white text-sm">Catégories populaires</h3>
                 <div className="flex flex-wrap gap-1">
@@ -448,20 +505,17 @@ const ClientDashboard = () => {
                     <Search className="h-12 w-12 text-slate-400 mx-auto mb-3" />
                     <h3 className="text-lg font-semibold mb-2 text-slate-900 dark:text-white">Aucun service trouvé</h3>
                     <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">
-                      {useAdvancedSearch
+                      {useAdvancedSearch || useGeolocation
                         ? "Essayez de modifier vos critères de recherche."
                         : "Essayez de modifier votre recherche."}
                     </p>
-                    {!useAdvancedSearch && (
-                      <Button
-                        onClick={() => setUseAdvancedSearch(true)}
-                        variant="outline"
-                        className="border-stone-200 dark:border-slate-700 text-xs h-8 px-3"
-                      >
-                        <Filter size={12} className="mr-1" />
-                        Recherche avancée
-                      </Button>
-                    )}
+                    <Button
+                      onClick={resetToOriginalServices}
+                      variant="outline"
+                      className="border-stone-200 dark:border-slate-700 text-xs h-8 px-3 bg-transparent"
+                    >
+                      Voir tous les services
+                    </Button>
                   </CardContent>
                 </Card>
               ) : (
@@ -762,6 +816,7 @@ const ClientDashboard = () => {
                             </div>
                           </div>
                         </div>
+
                         <div className="text-right">
                           <div className="text-lg font-bold text-slate-900 dark:text-white">
                             {formatPrice(booking.totalPrice)}
@@ -787,6 +842,7 @@ const ClientDashboard = () => {
                             Avis
                           </Button>
                         )}
+
                         {booking.status === "completed" && booking.hasReview && (
                           <Button
                             size="sm"
@@ -798,6 +854,7 @@ const ClientDashboard = () => {
                             Avis laissé
                           </Button>
                         )}
+
                         <Button
                           variant="outline"
                           size="sm"
@@ -807,6 +864,7 @@ const ClientDashboard = () => {
                           <MessageSquare size={12} className="mr-1" />
                           Contact
                         </Button>
+
                         {booking.status === "pending" && (
                           <Button variant="destructive" size="sm" className="text-xs h-7 px-2">
                             Annuler
